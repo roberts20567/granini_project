@@ -31,17 +31,11 @@ public class ExpansionHubTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         motortest1 = hardwareMap.dcMotor.get("motor_test_1");
-        motortest1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motortest1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        /*motortest1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motortest1.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
         motortest2 = hardwareMap.dcMotor.get("motor_test_2");
-        motortest2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motortest2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motortest3 = hardwareMap.dcMotor.get("motor_test_3");
-        motortest3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motortest3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motortest4 = hardwareMap.dcMotor.get("motor_test_4");
-        motortest4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motortest4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sensorTelemetry = new Sensor(telemetry);
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
