@@ -18,7 +18,11 @@ import java.util.Locale;
 @Autonomous(name="REV Test", group = "Sensors")
 public class ExpansionHubTest extends LinearOpMode {
 
-    DcMotor motortest;
+    DcMotor motortest1;
+    DcMotor motortest2;
+    DcMotor motortest3;
+    DcMotor motortest4;
+
     BNO055IMU imu;
     Orientation angles;
     Sensor sensorTelemetry;
@@ -26,27 +30,22 @@ public class ExpansionHubTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        motortest = hardwareMap.dcMotor.get("motor_test");
-        motortest.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motortest.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motortest1 = hardwareMap.dcMotor.get("motor_test_1");
+        motortest1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motortest1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motortest2 = hardwareMap.dcMotor.get("motor_test_2");
+        motortest2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motortest2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motortest3 = hardwareMap.dcMotor.get("motor_test_3");
+        motortest3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motortest3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motortest4 = hardwareMap.dcMotor.get("motor_test_4");
+        motortest4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motortest4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sensorTelemetry = new Sensor(telemetry);
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         sensorTelemetry.initSensor(imu);
-
-        /*        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();*/
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        /* imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters); */
 
 
 
@@ -62,7 +61,7 @@ public class ExpansionHubTest extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            motortest.setTargetPosition(1440);
+            /*motortest.setTargetPosition(1440);
             motortest.setPower(1);
             while(motortest.getCurrentPosition() < 1440 && opModeIsActive()) {
 
@@ -74,9 +73,19 @@ public class ExpansionHubTest extends LinearOpMode {
                 telemetry.update();
 
             }
-            motortest.setPower(0);
+            motortest.setPower(0);*/
+            runMotors(0.5);
             telemetry.update();
         }
+    }
+
+    void runMotors(double power) {
+
+        motortest1.setPower(power);
+        motortest2.setPower(power);
+        motortest3.setPower(power);
+        motortest4.setPower(power);
+
     }
 
     String formatAngle(AngleUnit angleUnit, double angle) {
