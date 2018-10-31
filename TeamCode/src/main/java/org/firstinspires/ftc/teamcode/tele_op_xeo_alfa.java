@@ -60,6 +60,17 @@ public class tele_op_xeo_alfa extends OpMode {
             motorBackLeft.setPower(BackLeft * motor_power);
             motorBackRight.setPower(BackRight * motor_power);
         }
+        /*if (gamepad1.a) {
+
+            motorTest.setPower(1);
+
+        }
+        else {
+
+            motorTest.setPower(0);
+
+        }*/
+        motorTest.setPower(gamepad1.left_stick_y);
 
 
     }
