@@ -24,7 +24,8 @@ public class tele_op_xeo_alfa extends OpMode {
     private DcMotor motorFrontLeft;
     private DcMotor motorBackRight;
     private DcMotor motorBackLeft;
-    private DcMotor motorTest;
+    private DcMotor motorRidicare;
+    private DcMotor motorHex;
     private double motor_power;
 
     @Override
@@ -33,7 +34,8 @@ public class tele_op_xeo_alfa extends OpMode {
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
-        motorTest = hardwareMap.dcMotor.get("motor_test_5");
+        motorRidicare = hardwareMap.dcMotor.get("motor_test_5");
+        motorHex = hardwareMap.dcMotor.get("motor_hex");
         motor_power = 0.5;
     }
 
@@ -70,7 +72,8 @@ public class tele_op_xeo_alfa extends OpMode {
             motorTest.setPower(0);
 
         }*/
-        motorTest.setPower(gamepad1.left_stick_y);
+        motorRidicare.setPower(gamepad2.left_stick_y);
+        motorHex.setPower(gamepad2.y? 1:0);
 
 
     }
