@@ -107,7 +107,6 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
                         telemetry.update();
                 }
 
-                mergiFata(0.4);
                 Thread.sleep(2000);
                 rotireDreapta(0.4);
                 Thread.sleep(1000);
