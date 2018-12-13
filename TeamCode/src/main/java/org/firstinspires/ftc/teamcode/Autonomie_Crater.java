@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
-@Autonomous(name = "Autonomie_patrat")//duck duck duck duck duck duck duck duck duck duck duck duck duck duck duck
-public class Autonomie_patrat extends LinearOpMode {
+@Autonomous(name = "Autonomie_crater")//duck duck duck duck duck duck duck duck duck duck duck duck duck duck duck
+public class Autonomie_Crater extends LinearOpMode {
     private DcMotor motorFrontRight;
     private DcMotor motorFrontLeft;
     private DcMotor motorBackRight;
@@ -85,41 +85,33 @@ public class Autonomie_patrat extends LinearOpMode {
         Thread.sleep(1500);
         motorLift.setPower(0);
         Thread.sleep(1000);
+
         mergiDreapta(0.3);
-        Thread.sleep(281);
-        oprireMiscare();
-        rotireStanga(0.3);
-        Thread.sleep(200);
+        Thread.sleep(225);
         oprireMiscare();
         Thread.sleep(1000);
 
-        mergiFata(0.66);
-        Thread.sleep(2100);
+        rotireStanga(0.5);
+        Thread.sleep(152);
         oprireMiscare();
+        Thread.sleep(7000);
 
-
-        rotireStanga(0.4);
-        Thread.sleep(300);
+        mergiFata(0.3);
+        Thread.sleep(3000);
         oprireMiscare();
-        servoTeamMarker.setPosition(-1);
-        Thread.sleep(2000);
+        mergiStanga(0.66);
+        Thread.sleep(1000);
+
+        mergiFata(0.6);
+        Thread.sleep(500);
+        mergiStanga(0.6);
+        Thread.sleep(800);
+
+        rotireGoogle(180, 0.4);
         servoTeamMarker.setPosition(1);
         Thread.sleep(2000);
-        mergiStanga(0.5);
-        Thread.sleep(500);
-        Thread.sleep(500);
-        /*rotireGoogle(40, 0.4);
-        servoTeamMarker.setPosition(1);
-        Thread.sleep(2000);
         servoTeamMarker.setPosition(-1);
         Thread.sleep(2000);
-        rotireGoogle(250, 0.4);
-
-        Thread.sleep(500);
-        mergiSpate(1);
-        Thread.sleep(2250);
-        oprireMiscare();*/
-
 
 
     }
