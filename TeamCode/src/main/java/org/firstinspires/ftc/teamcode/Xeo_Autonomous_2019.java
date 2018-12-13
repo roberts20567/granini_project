@@ -178,5 +178,10 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
         rotireDreapta(-viteza);
     }
 
+    private void mergiFata(float viteza)
+    {
+        motorFrontRight.setPower();
+    }
+
 
 }
