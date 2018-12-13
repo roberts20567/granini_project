@@ -1,28 +1,30 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.widget.Button;
+        import android.widget.Button;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
+        import com.qualcomm.hardware.bosch.BNO055IMU;
+        import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+        import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.hardware.DcMotor;
+        import com.qualcomm.robotcore.hardware.DigitalChannel;
+        import com.qualcomm.robotcore.hardware.GyroSensor;
+        import com.qualcomm.robotcore.hardware.Servo;
+        import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorBNO055IMU;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+        import org.firstinspires.ftc.robotcontroller.external.samples.SensorBNO055IMU;
+        import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
+        import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+        import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+        import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+        import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
+        import java.util.Locale;
+        import java.util.concurrent.TimeUnit;
+
+        import static com.sun.tools.doclint.Entity.or;
 
 @TeleOp(name = "Xeo18-19: Tele-OP", group = "Xeo18-19")
 public class tele_op_xeo_alfa extends OpMode {
@@ -33,9 +35,9 @@ public class tele_op_xeo_alfa extends OpMode {
     private DcMotor motorRidicare;
     private DcMotor motorLift;
     private DcMotor motorHex;
-    private  DcMotor motorNebun;
+    private DcMotor motorSurub;
+    private DigitalChannel digitalTouch;
     private Servo team;
-    private double motor_power=0.66;
     private float currentPosition;
     private boolean coboara = false;
     private boolean urca = false;
@@ -47,7 +49,14 @@ public class tele_op_xeo_alfa extends OpMode {
     private double ideal_speed=0.66;
 
     private static final String VUFORIA_KEY = "AaWc2RL/////AAABmZlxFvRyrk/YiqLbf3ykKmxLDRhJ5p955zNPuaCd9KvLm88Vfa399ERWzf+8iLlRqzO8q1Rl821vvtYMTJHhp6bE+zpOD8f5lcm6n14UM74JEVVwCDeogIBQSmNGzX4jkeCuK4VqC2rTZFlSB3DEY55XZfQ2vvcrjG1hfyls5tgUPhq5oI3XYehWhuoOaHYushaRmDLnCG5buNsJGHQFu7/XkHrEGTL5FMBFTKaaYKlxGJy7CVaIJrX794j2ispN9r9XaMgoNxXFHPIM6yGd6UFFwvMJ4YOXHWD3sdAWT+HLWmUxoyP+p29f7uchlma1y+1nGOO5pleCpk2at07Pp+E0pJifUgNg2Khhqa3SJABz";
-    //private DigitalChannel butonFata;
+
+    // variabile Claudiu
+    private final double VITEZA_MISCARE_1 = 0.22;
+    private final double VITEZA_MISCARE_2 = 0.66;
+    private final double VITEZA_MISCARE_3 = 0.99;
+    private boolean miscare_POW = false;
+    private double start_angle = 0;
+    private double motor_power = VITEZA_MISCARE_2;
 
     @Override
     public void init() {
@@ -58,7 +67,7 @@ public class tele_op_xeo_alfa extends OpMode {
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
         motorLift = hardwareMap.dcMotor.get("motor_lift");
         motorHex = hardwareMap.dcMotor.get("motor_hex");
-        motorNebun= hardwareMap.dcMotor.get("motor_nebun");
+        motorSurub= hardwareMap.dcMotor.get("motor_nebun");
         team=hardwareMap.servo.get("smart_servo");
         //butonFata = hardwareMap.digitalChannel.get("buton_fata");
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -67,6 +76,12 @@ public class tele_op_xeo_alfa extends OpMode {
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor_power = 0.5;
+
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+
+        // set the digital channel to input.
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -81,25 +96,40 @@ public class tele_op_xeo_alfa extends OpMode {
 
     }
 
-      @Override
-    public void loop(){
-
+    private void Miscare(){
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("heading:" ,formatAngle(angles.angleUnit, angles.firstAngle));
         telemetry.addData("roll:" ,formatAngle(angles.angleUnit, angles.secondAngle));
         telemetry.addData("pitch:" ,formatAngle(angles.angleUnit, angles.thirdAngle));
 
+        if(gamepad1.y)
+            motor_power = VITEZA_MISCARE_1;
+        if(gamepad1.a)
+            motor_power = VITEZA_MISCARE_2;
+        if(gamepad1.x)
+            motor_power = VITEZA_MISCARE_3;
+
+        double sprint = gamepad1.right_trigger;
+
         float gamepad1LeftY = -gamepad1.left_stick_y ;
         float gamepad1LeftX = -gamepad1.left_stick_x ;
         float gamepad1RightX = -gamepad1.right_stick_x;
 
-        double angle = Math.toRadians(angles.firstAngle);
+        if(miscare_POW) {
+            double angle = Math.toRadians(angles.firstAngle - start_angle);
+            double motorX = Math.cos(angle) * gamepad1LeftX - Math.sin(angle) * gamepad1LeftY;
+            double motorY = Math.cos(angle) * gamepad1LeftY + Math.sin(angle) * gamepad1LeftX;
+            gamepad1LeftX = (float) motorX;
+            gamepad1LeftY = (float) motorY;
+        }
 
-        double motorX = Math.cos(angle)* gamepad1LeftX - Math.sin(angle)*gamepad1LeftY;
-        double motorY = Math.cos(angle)* gamepad1LeftY + Math.sin(angle)*gamepad1LeftX;
-
-        gamepad1LeftX = (float)motorX;
-        gamepad1LeftY = (float)motorY;
+        if (gamepad1.left_bumper){
+            miscare_POW = false;
+        }
+        if (gamepad1.right_bumper){
+            miscare_POW = true;
+            start_angle = angles.firstAngle;
+        }
 
         // holonomic formulas
         float FrontLeft = -gamepad1LeftY - gamepad1LeftX - gamepad1RightX;
@@ -114,35 +144,16 @@ public class tele_op_xeo_alfa extends OpMode {
         BackRight = Range.clip(BackRight, -1, 1);
 
         if (!gamepad1.dpad_up && !gamepad1.dpad_down && !gamepad1.dpad_right && !gamepad1.dpad_left) {
-            motorFrontRight.setPower(FrontRight * motor_power);
-            motorFrontLeft.setPower(FrontLeft * motor_power);
-            motorBackLeft.setPower(BackLeft * motor_power);
-            motorBackRight.setPower(BackRight * motor_power);
+            motorFrontRight.setPower(FrontRight * (motor_power +sprint));
+            motorFrontLeft.setPower(FrontLeft * (motor_power + sprint));
+            motorBackLeft.setPower(BackLeft * (motor_power + sprint));
+            motorBackRight.setPower(BackRight * (motor_power + sprint));
         }
+    }
 
-
+    private void controlBrat(){
         currentPosition = motorRidicare.getCurrentPosition();
-        telemetry.addData("Encoder position", currentPosition);
-
-         if(gamepad1.a)
-             goFront(ideal_speed);
-
-          if(gamepad1.y)
-              goFront(-ideal_speed);
-
-          if(gamepad1.b)
-              goRight(ideal_speed);
-
-          if(gamepad1.x)
-              goRight(-ideal_speed);
-
-          if(!gamepad1.b && !gamepad1.a && !gamepad1.y && !gamepad1.x)
-          {
-              motorFrontLeft.setPower(0);
-              motorFrontRight.setPower(0);
-              motorBackRight.setPower(0);
-              motorBackLeft. setPower(0);
-          }
+        telemetry.addData("Motor brat: ", currentPosition);
 
         if(gamepad2.dpad_down){//coborare
             motorRidicare.setPower(-0.5);
@@ -150,10 +161,10 @@ public class tele_op_xeo_alfa extends OpMode {
             urca = false;
         }
         if(coboara){
-            if(currentPosition <= -750 && currentPosition >=- 800)  {
+            if(currentPosition <= -750 && currentPosition >= -800)  {
                 motorRidicare.setPower(0.1);
                 coboara = false;
-                sleep(200);
+                sleep(300);
                 motorRidicare.setPower(0);
             }
             if(currentPosition<-500){
@@ -173,24 +184,53 @@ public class tele_op_xeo_alfa extends OpMode {
                 urca = false;
             }
         }
-if(gamepad2.b)   motorLift.setPower(0.96);
+    }
 
-     if(gamepad2.a) motorLift.setPower(-0.96);
+    private void controlSurub(){
+        telemetry.addData("encoder surub", motorSurub.getCurrentPosition());
+        /*double position = motorSurub.getCurrentPosition();
+        if (position < 5900 && 0<-gamepad2.left_stick_y)
+            motorSurub.setPower(-gamepad2.left_stick_y);
+        else
+            motorSurub.setPower(0);
+        if (position > 20 && 0>-gamepad2.left_stick_y)
+            motorSurub.setPower(-gamepad2.left_stick_y);
+        else
+            motorSurub.setPower(0);
+        if(gamepad2.left_stick_y == 0)
+            motorSurub.setPower(0);*/
+        motorSurub.setPower(-gamepad2.left_stick_y);
+    }
 
-     if(!gamepad2.b && !gamepad2.a)
-         motorLift.setPower(0);
+    private void controlLift(){
+        motorLift.setPower(gamepad2.right_stick_y);
+    }
 
+    private void controlPeri(){
+        if (gamepad2.a)
+            motorHex.setPower(0.99);
+        if (gamepad2.b)
+            motorHex.setPower(-0.5);
+        if (!gamepad2.a && !gamepad2.b)
+            motorHex.setPower(0);
+    }
 
-        motorHex.setPower(gamepad2.y? 1:0);
-        motorHex.setPower(gamepad2.x? -1:0);
+    @Override
+    public void loop(){
 
-        motorNebun.setPower(-gamepad2.left_stick_y);//intins brat
+        Miscare();
 
-        telemetry.addData("position", motorLift.getCurrentPosition());
+        controlBrat();
+
+        controlSurub();
+
+        controlPeri();
+
+        controlLift();
+
+        //telemetry.addData("Button state: ", digitalTouch.getState());
         telemetry.update();
-
-      }
-// + A - B
+    }
     @Override
     public void stop(){
         stopMotors();
