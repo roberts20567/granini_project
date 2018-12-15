@@ -8,12 +8,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
+import java.util.Locale;
+
 @Autonomous(name = "Xeo_Autonomous_2019")
 public class Xeo_Autonomous_2019 extends LinearOpMode {
 
@@ -22,12 +27,14 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
     private DcMotor motorBackRight;
     private DcMotor motorBackLeft;
     private DcMotor motorRidicare;
+    private DcMotor motorLift;
     private DcMotor motorHex;
     private  DcMotor motorNebun;
     private double motor_power=0.66;
     private float currentPosition;
     private boolean coboara = false;
     private boolean urca = false;
+    private int pos = 0;
     BNO055IMU imu;
     Orientation angles;
 
@@ -43,28 +50,20 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
+        initVuforia();
+        initIMU();
 
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
-       /* motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
-        motorHex = hardwareMap.dcMotor.get("motor_hex");
-        motorNebun = hardwareMap.dcMotor.get("motor_nebun");
-        motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor_power = 0.5;
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-*/
-        initVuforia();
+        motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
+
+        motorLift = hardwareMap.dcMotor.get("motor_lift");
+        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
@@ -72,6 +71,9 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD");
         }
 
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start tracking");
+        telemetry.update();
         waitForStart();
 
         if (opModeIsActive()) {
@@ -80,42 +82,52 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
                 tfod.activate();
             }
 
-            while (opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+            while (opModeIsActive()) {
+
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        int goldMineralX = -1;
-                        int goldMineralY = -1;
-                        int silverMineral1X = -1;
-                        int silverMineral2X = -1;
-                        for (Recognition recognition : updatedRecognitions) {
-                            if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                goldMineralX = (int) recognition.getLeft();
-                                goldMineralY = (int) recognition.getTop();
-                            } else if (silverMineral1X == -1) {
-                                silverMineral1X = (int) recognition.getLeft();
-                            } else {
-                                silverMineral2X = (int) recognition.getLeft();
+                        if (updatedRecognitions.size() == 2) {
+                            int goldMineralX = -1;
+                            int silverMineral1X = -1;
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    goldMineralX = (int) recognition.getLeft();
+                                } else {
+                                    silverMineral1X = (int) recognition.getLeft();
+                                }
+                            }
+
+                            coborareLift();
+                            rotireGoogle(0, 0.5);
+                            Thread.sleep(100);
+                            if (goldMineralX == -1) {
+                                goRight(0.55+0.11);
+                                sleep(400);
+                                oprireMiscare();
+                                Thread.sleep(100);
+
+                                telemetry.addData("Gold Mineral Position", "Left");
+                            }else if(goldMineralX < silverMineral1X) {
+                                iaCub(2);
+                                telemetry.addData("Gold Mineral Position", "Center");
+                            }else {
+                                telemetry.addData("Gold Mineral Position", "Right");
                             }
                         }
-                        telemetry.addData("GoldMineralX", goldMineralX);
-                        telemetry.addData("GoldMineralY", goldMineralY);
-                        }
+                    }
                         telemetry.update();
                 }
-
-                Thread.sleep(2000);
-                rotireDreapta(0.4);
-                Thread.sleep(1000);
             }
-
-            }
-
         }
 
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+    }
 
     private void initVuforia() {
         /*
@@ -132,6 +144,41 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
         // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
     }
 
+    private void initIMU() {
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.loggingEnabled = true;
+        parameters.loggingTag     = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+    }
+
+    private void iaCub(int pozitie) throws InterruptedException {
+
+        switch (pozitie) {
+
+            case 1:
+                break;
+            case 2:
+                motorRidicare.setPower(-0.8);
+                Thread.sleep(500);
+                motorRidicare.setPower(0);
+                Thread.sleep(100);
+                goFront(0.7);
+                motorHex.setPower(0.66);
+                Thread.sleep(800);
+                oprireMiscare();
+                motorHex.setPower(0);
+                Thread.sleep(100);
+                break;
+            case 3:
+                break;
+
+        }
+
+    }
+
     /**
      * Initialize the Tensor Flow Object Detection engine.
      */
@@ -141,6 +188,30 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
+
+    private void coborareLift() throws InterruptedException {
+
+        motorRidicare.setPower(-0.8);
+        Thread.sleep(500);
+        motorRidicare.setPower(0);
+        Thread.sleep(100);
+        motorRidicare.setPower(0.8);
+        Thread.sleep(900);
+        motorRidicare.setPower(0);
+        Thread.sleep(100);
+        motorLift.setPower(-0.4);
+        Thread.sleep(1500);
+        motorLift.setPower(0);
+
+    }
+
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
     private void goFront(double speed) {
@@ -172,6 +243,79 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
         motorBackLeft.setPower(viteza);
     }
 
+    private void oprireMiscare(){
+        motorFrontLeft.setPower(0);
+        motorBackRight.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackLeft.setPower(0);
+    }
+
+    private void rotireGoogle(double degrees, double power) {
+        resetAngle();
+        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+        // clockwise (right).
+        if (degrees < 0) {
+            // turn right.
+            rotireDreapta(power);
+        }
+        else if (degrees > 0) {
+            // turn left.
+            rotireStanga(power);
+        }
+        else return;
+        // rotate until turn is completed.
+        if (degrees < 0) {
+            // On right turn we have to get off zero first.
+            while (opModeIsActive() && getAngle() == 0) {}
+
+            while (opModeIsActive() && getAngle() > degrees) {
+                double alpha = Math.abs(degrees-getAngle()) / degrees;
+                rotireDreapta(0.9*power * Math.sqrt(alpha) + 0.1);
+            }
+        }
+        else    // left turn.
+            while (opModeIsActive() && getAngle() < degrees) {
+                double alpha = Math.abs(degrees-getAngle()) / degrees;
+                rotireStanga(0.9*power * Math.sqrt(alpha) + 0.1);
+            }
+        // turn the motors off.
+        oprireMiscare();
+        // reset angle tracking on new heading.
+        resetAngle();
+    }
+
+    private double globalAngle;
+    private Orientation lastAngles = new Orientation();
+
+    private void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
+    }
+
+    private double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
     private void rotireStanga(double viteza)
     {
         rotireDreapta(-viteza);
@@ -179,7 +323,7 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
 
     private void mergiFata(float viteza)
     {
-        motorFrontRight.setPower();
+        motorFrontRight.setPower(-viteza);
     }
 
 

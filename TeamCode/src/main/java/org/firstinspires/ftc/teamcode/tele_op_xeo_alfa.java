@@ -58,6 +58,10 @@ public class tele_op_xeo_alfa extends OpMode {
     private double start_angle = 0;
     private double motor_power = VITEZA_MISCARE_2;
 
+    private double POZITIE_LIFT_MAXIM = 2150;
+    private double POZITIE_LIFT_MINIM = 100;
+    private double DISTANTA_INCETINIRE_LIFT = 400;
+
     @Override
     public void init() {
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
@@ -65,15 +69,17 @@ public class tele_op_xeo_alfa extends OpMode {
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
+
         motorLift = hardwareMap.dcMotor.get("motor_lift");
+        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         motorHex = hardwareMap.dcMotor.get("motor_hex");
         motorSurub= hardwareMap.dcMotor.get("motor_nebun");
         team=hardwareMap.servo.get("smart_servo");
         //butonFata = hardwareMap.digitalChannel.get("buton_fata");
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor_power = 0.5;
 
@@ -203,14 +209,42 @@ public class tele_op_xeo_alfa extends OpMode {
     }
 
     private void controlLift(){
-        motorLift.setPower(gamepad2.right_stick_y);
+        double lift_position = -motorLift.getCurrentPosition();
+        double lift_power = gamepad2.right_stick_y;
+
+        telemetry.addData("Lift", lift_position);
+        telemetry.addData("Lift", lift_power);
+
+        if(lift_power < 0){
+            if (lift_position < POZITIE_LIFT_MAXIM - DISTANTA_INCETINIRE_LIFT)
+                motorLift.setPower(lift_power);
+            else if(lift_position < POZITIE_LIFT_MAXIM)
+                motorLift.setPower(lift_power * ((POZITIE_LIFT_MAXIM-lift_position) / DISTANTA_INCETINIRE_LIFT));
+            else
+                motorLift.setPower(0);
+            return;
+        }
+
+        if(lift_power > 0){
+            if (lift_position > POZITIE_LIFT_MINIM + DISTANTA_INCETINIRE_LIFT)
+                motorLift.setPower(lift_power);
+            else if(lift_position > POZITIE_LIFT_MINIM)
+                motorLift.setPower(lift_power * ((lift_position - POZITIE_LIFT_MINIM) / DISTANTA_INCETINIRE_LIFT));
+            else
+                motorLift.setPower(0);
+            return;
+        }
+
+        if(gamepad2.right_stick_y == 0){
+            motorLift.setPower(0);
+        }
     }
 
     private void controlPeri(){
         if (gamepad2.a)
-            motorHex.setPower(0.99);
+            motorHex.setPower(0.66);
         if (gamepad2.b)
-            motorHex.setPower(-0.5);
+            motorHex.setPower(-0.66);
         if (!gamepad2.a && !gamepad2.b)
             motorHex.setPower(0);
     }
@@ -252,35 +286,16 @@ public class tele_op_xeo_alfa extends OpMode {
         motorFrontLeft.close();*/
     }
 
-    private void goFront(double speed) {
-
-        motorFrontLeft.setPower(-speed);
-        motorFrontRight.setPower(speed);
-        motorBackRight.setPower(speed);
-        motorBackLeft. setPower(-speed);
-
-    }
-
-    private void goRight(double speed) {
-
-        motorFrontLeft.setPower(-speed);
-        motorFrontRight.setPower(-speed);
-        motorBackRight.setPower(speed);
-        motorBackLeft. setPower(speed);
-
-    }
     private void stopServos() {
 
     }
 
-    String formatAngle(AngleUnit angleUnit, double angle) {
+    private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees){
+   private String formatDegrees(double degrees){
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-
-
 
 }
