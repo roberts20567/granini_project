@@ -14,6 +14,7 @@ public class NClaudiuOmniDirectionalMovement {
     private double motor_power;
     private double current_angle;
     private boolean pow_active;
+    private static final double wheel_rotation_per_angle = 1;
 
     public NClaudiuOmniDirectionalMovement(){
         motor_power = 0.66;
@@ -22,7 +23,7 @@ public class NClaudiuOmniDirectionalMovement {
         gamepad = null;
     }
 
-    public void moveLoop(){
+    public void OPmodeLoop(){
         float gamepap_left_y = -gamepad.left_stick_y ;
         float gamepad_left_x = -gamepad.left_stick_x ;
         float gamepad_right_x = -gamepad.right_stick_x;
@@ -76,6 +77,33 @@ public class NClaudiuOmniDirectionalMovement {
         motor_back_left.setPower(0);
     }
 
+    public void moveToDirection(double distance, double direction){
+        double x = 1;
+        double y = 0;
+
+        int FrontLeft = (int)(-y - x);
+        int FrontRight = (int)(y - x);
+        int BackRight = (int)(y + x);
+        int BackLeft = (int)(-y + x);
+
+        motor_front_right.setTargetPosition(FrontRight);
+        motor_front_left.setTargetPosition(FrontLeft);
+        motor_back_right.setTargetPosition(BackRight);
+        motor_back_left.setTargetPosition(BackLeft);
+    }
+
+    public void rotateToAngleUsingEncoders(double angle){
+        int steps = (int)(angle * wheel_rotation_per_angle);
+        motor_front_right.setTargetPosition(steps);
+        motor_front_left.setTargetPosition(steps);
+        motor_back_right.setTargetPosition(steps);
+        motor_back_left.setTargetPosition(steps);
+    }
+
+    /*public void rotateToAngleUsingEncoders(int angle){
+        rotateToAngleUsingEncoders((double)angle);
+    }*/
+
     public void attachMotors(DcMotor motor_front_right, DcMotor motor_front_left, DcMotor motor_back_right, DcMotor motor_back_left){
         this.motor_front_right = motor_front_right;
         this.motor_front_left = motor_front_left;
@@ -102,7 +130,7 @@ public class NClaudiuOmniDirectionalMovement {
     }
 
     public void setMotorPower(double motor_power){
-        this.motor_power = Range.clip(motor_power, -1, 1);
+        this.motor_power = Range.clip(motor_power, 0, 1);
     }
 
     public Gamepad getGamepad() {
