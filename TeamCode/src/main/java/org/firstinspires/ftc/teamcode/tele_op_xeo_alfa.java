@@ -20,6 +20,7 @@ package org.firstinspires.ftc.teamcode;
         import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
         import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
         import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+        import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
         import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.OmniDirectionalMovement;
 
         import java.util.Locale;
@@ -99,7 +100,10 @@ public class tele_op_xeo_alfa extends OpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-
+        NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
+        robot.attachMotors(motorFrontRight, motorBackLeft, motorBackRight, motorBackLeft);
+        robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.AUTONOMOUS);
+        robot.setMotorPower(5);
 
     }
 

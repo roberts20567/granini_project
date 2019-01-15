@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.clasele_lui_claudiu;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
@@ -14,14 +15,14 @@ public class NClaudiuOmniDirectionalMovement {
     private double current_angle;
     private boolean pow_active;
 
-    NClaudiuOmniDirectionalMovement(){
+    public NClaudiuOmniDirectionalMovement(){
         motor_power = 0.66;
         current_angle = 0;
         pow_active = false;
         gamepad = null;
     }
 
-    public void loopMove(){
+    public void moveLoop(){
         float gamepap_left_y = -gamepad.left_stick_y ;
         float gamepad_left_x = -gamepad.left_stick_x ;
         float gamepad_right_x = -gamepad.right_stick_x;
@@ -51,6 +52,30 @@ public class NClaudiuOmniDirectionalMovement {
         motor_back_left.setPower(BackRight * motor_power);
     }
 
+    public enum DrivingMode {
+        AUTONOMOUS,
+        TELEOP
+    }
+
+    public void setDrivingMode(DrivingMode driving_mode){
+        switch (driving_mode){
+            case AUTONOMOUS:
+                motorsSetMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorsSetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                break;
+            case TELEOP:
+                motorsSetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                break;
+        }
+    }
+
+    public void stop(){
+        motor_front_right.setPower(0);
+        motor_front_left.setPower(0);
+        motor_back_right.setPower(0);
+        motor_back_left.setPower(0);
+    }
+
     public void attachMotors(DcMotor motor_front_right, DcMotor motor_front_left, DcMotor motor_back_right, DcMotor motor_back_left){
         this.motor_front_right = motor_front_right;
         this.motor_front_left = motor_front_left;
@@ -65,7 +90,7 @@ public class NClaudiuOmniDirectionalMovement {
         motor_back_left = null;
     }
 
-    private void setMode(DcMotor.RunMode mode){
+    private void motorsSetMode(DcMotor.RunMode mode){
         motor_front_right.setMode(mode);
         motor_front_left.setMode(mode);
         motor_back_right.setMode(mode);
