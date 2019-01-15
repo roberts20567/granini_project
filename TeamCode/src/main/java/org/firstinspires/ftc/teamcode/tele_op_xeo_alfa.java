@@ -20,6 +20,7 @@ package org.firstinspires.ftc.teamcode;
         import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
         import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
         import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+        import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.OmniDirectionalMovement;
 
         import java.util.Locale;
         import java.util.concurrent.TimeUnit;
@@ -103,7 +104,7 @@ public class tele_op_xeo_alfa extends OpMode {
     }
 
     private void Miscare(){
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("heading:" ,formatAngle(angles.angleUnit, angles.firstAngle));
         telemetry.addData("roll:" ,formatAngle(angles.angleUnit, angles.secondAngle));
         telemetry.addData("pitch:" ,formatAngle(angles.angleUnit, angles.thirdAngle));
@@ -211,7 +212,7 @@ public class tele_op_xeo_alfa extends OpMode {
     private void controlLift(){
         double lift_position = -motorLift.getCurrentPosition();
         double lift_power = gamepad2.right_stick_y;
-
+/*
         telemetry.addData("Lift", lift_position);
         telemetry.addData("Lift", lift_power);
 
@@ -233,8 +234,9 @@ public class tele_op_xeo_alfa extends OpMode {
             else
                 motorLift.setPower(0);
             return;
-        }
+        }*/
 
+        motorLift.setPower(lift_power);
         if(gamepad2.right_stick_y == 0){
             motorLift.setPower(0);
         }
@@ -244,7 +246,7 @@ public class tele_op_xeo_alfa extends OpMode {
         if (gamepad2.a)
             motorHex.setPower(0.66);
         if (gamepad2.b)
-            motorHex.setPower(-0.66);
+            motorHex.setPower(-0.11*6);
         if (!gamepad2.a && !gamepad2.b)
             motorHex.setPower(0);
     }

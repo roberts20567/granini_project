@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -17,6 +18,8 @@ import java.util.Locale;
 
 @Autonomous(name = "Autonomie_crater")//duck duck duck duck duck duck duck duck duck duck duck duck duck duck duck
 public class Autonomie_Crater extends LinearOpMode {
+    private CRServo servo_1;
+    private CRServo servo_2;
     private DcMotor motorFrontRight;
     private DcMotor motorFrontLeft;
     private DcMotor motorBackRight;
@@ -46,7 +49,7 @@ public class Autonomie_Crater extends LinearOpMode {
     }
 
     private void Init(){
-        motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
+       /* motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
@@ -54,14 +57,16 @@ public class Autonomie_Crater extends LinearOpMode {
         motorHex = hardwareMap.dcMotor.get("motor_hex");
         motorSurub = hardwareMap.dcMotor.get("motor_nebun");
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
-        servoTeamMarker =hardwareMap.servo.get("smart_servo");
+        servoTeamMarker =hardwareMap.servo.get("smart_servo");*/
 
 
+        servo_1 = hardwareMap.crservo.get("servo_1");
+        servo_2 = hardwareMap.crservo.get("servo_2");
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Init();
+       Init();/*
         initGyro();
         while (!isStarted()){
             telemetry.addData("Back Left: ", motorBackLeft.getCurrentPosition());
@@ -112,7 +117,15 @@ public class Autonomie_Crater extends LinearOpMode {
         Thread.sleep(2000);
         servoTeamMarker.setPosition(-1);
         Thread.sleep(2000);
+*/
+        telemetry.addData("CEAU",6);
+        Thread.sleep(1000);
 
+            servo_1.setPower(1);
+            Thread.sleep(4000);
+
+        telemetry.addData("pa",7);
+        Thread.sleep(1000);
 
     }
 

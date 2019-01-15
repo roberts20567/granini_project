@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.OmniDirectionalMovement;
 
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +28,7 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
     private DcMotor motorFrontLeft;
     private DcMotor motorBackRight;
     private DcMotor motorBackLeft;
+
     private DcMotor motorRidicare;
     private DcMotor motorLift;
     private DcMotor motorHex;
@@ -54,12 +57,12 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
         // first.
         initVuforia();
         initIMU();
-
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
+        motorHex = hardwareMap.dcMotor.get("motor_hex");
 
         motorLift = hardwareMap.dcMotor.get("motor_lift");
         motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -203,6 +206,9 @@ public class Xeo_Autonomous_2019 extends LinearOpMode {
         motorLift.setPower(-0.4);
         Thread.sleep(1500);
         motorLift.setPower(0);
+        goRight(-0.3);
+        Thread.sleep(281);
+        oprireMiscare();
 
     }
 
