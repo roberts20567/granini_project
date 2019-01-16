@@ -89,9 +89,9 @@ public class tele_op_xeo_alfa extends OpMode {
        /* motorSurub.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorSurub.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
 
-        motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+     //  motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        /*motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
         motor_power = 0.5;
 
         automatizare = 0;
@@ -181,7 +181,7 @@ public class tele_op_xeo_alfa extends OpMode {
         telemetry.addData("Motor brat: ", currentPosition);
 
         if(gamepad2.dpad_down){//coborare
-            motorRidicare.setPower(-0.5);
+            motorRidicare.setPower(-0.8);
             coboara = true;
             urca = false;
         }
@@ -295,6 +295,22 @@ public class tele_op_xeo_alfa extends OpMode {
         controlLift();
 
         //motorSurub.setPower(-gamepad2.left_stick_y);
+
+        if (gamepad2.dpad_left) {
+
+            motorRidicare.setPower(-1);
+
+        }
+
+        else if (gamepad2.dpad_right) {
+
+            motorRidicare.setPower(1);
+
+        }
+
+        else
+            motorRidicare.setPower(0);
+
         double position = motorSurub.getCurrentPosition();
         telemetry.addData("extindere ", position);
         telemetry.addData("automatizare ", automatizare);
