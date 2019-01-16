@@ -76,6 +76,7 @@ public class tele_op_xeo_alfa extends OpMode {
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
+        motorLift = hardwareMap.dcMotor.get("motor_lift");
 
         //motorLift = hardwareMap.dcMotor.get("motor_lift");
         //motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -90,8 +91,8 @@ public class tele_op_xeo_alfa extends OpMode {
         motorSurub.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
 
      //  motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        /*motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
+        motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor_power = 0.5;
 
         automatizare = 0;
@@ -177,11 +178,11 @@ public class tele_op_xeo_alfa extends OpMode {
     }
 
     private void controlBrat(){
-        currentPosition = motorRidicare.getCurrentPosition();
+        currentPosition = -motorRidicare.getCurrentPosition();
         telemetry.addData("Motor brat: ", currentPosition);
 
         if(gamepad2.dpad_down){//coborare
-            motorRidicare.setPower(-0.8);
+            motorRidicare.setPower(-0.9);
             coboara = true;
             urca = false;
         }
@@ -199,7 +200,7 @@ public class tele_op_xeo_alfa extends OpMode {
         }
         if(gamepad2.dpad_up)
         {//urcare
-            motorRidicare.setPower(0.8);
+            motorRidicare.setPower(0.9);
             urca = true;
             coboara = false;
         }
@@ -237,8 +238,8 @@ public class tele_op_xeo_alfa extends OpMode {
     }
 
     private void controlLift(){
-        //double lift_position = -motorLift.getCurrentPosition();
-        //double lift_power = gamepad2.right_stick_y;
+       // double lift_position = -motorLift.getCurrentPosition();
+        double lift_power = gamepad2.right_stick_y;
 /*
         telemetry.addData("Lift", lift_position);
         telemetry.addData("Lift", lift_power);
@@ -261,9 +262,9 @@ public class tele_op_xeo_alfa extends OpMode {
             else
                 motorLift.setPower(0);
             return;
-        }*/
-
-       //motorLift.setPower(lift_power);
+        }
+*/
+       motorLift.setPower(lift_power);
     }
 
     private void controlPeri(){
