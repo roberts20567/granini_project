@@ -8,6 +8,7 @@ package org.firstinspires.ftc.teamcode;
         import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.hardware.CRServo;
         import com.qualcomm.robotcore.hardware.DcMotor;
         import com.qualcomm.robotcore.hardware.DigitalChannel;
         import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -20,12 +21,11 @@ package org.firstinspires.ftc.teamcode;
         import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
         import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
         import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-        import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
-        import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.OmniDirectionalMovement;
 
         import java.util.Locale;
         import java.util.concurrent.TimeUnit;
 
+        import static com.sun.tools.doclint.Entity.and;
         import static com.sun.tools.doclint.Entity.or;
 
 @TeleOp(name = "Xeo18-19: Tele-OP", group = "Xeo18-19")
@@ -50,6 +50,9 @@ public class tele_op_xeo_alfa extends OpMode {
     private final int maxExtindere = 500;
     private double ideal_speed=0.66;
 
+    private CRServo servo_adunare_stanga;
+    private CRServo servo_adunare_drepta;
+
     private static final String VUFORIA_KEY = "AaWc2RL/////AAABmZlxFvRyrk/YiqLbf3ykKmxLDRhJ5p955zNPuaCd9KvLm88Vfa399ERWzf+8iLlRqzO8q1Rl821vvtYMTJHhp6bE+zpOD8f5lcm6n14UM74JEVVwCDeogIBQSmNGzX4jkeCuK4VqC2rTZFlSB3DEY55XZfQ2vvcrjG1hfyls5tgUPhq5oI3XYehWhuoOaHYushaRmDLnCG5buNsJGHQFu7/XkHrEGTL5FMBFTKaaYKlxGJy7CVaIJrX794j2ispN9r9XaMgoNxXFHPIM6yGd6UFFwvMJ4YOXHWD3sdAWT+HLWmUxoyP+p29f7uchlma1y+1nGOO5pleCpk2at07Pp+E0pJifUgNg2Khhqa3SJABz";
 
     // variabile Claudiu
@@ -64,6 +67,8 @@ public class tele_op_xeo_alfa extends OpMode {
     private double POZITIE_LIFT_MINIM = 100;
     private double DISTANTA_INCETINIRE_LIFT = 400;
 
+    private int automatizare;
+
     @Override
     public void init() {
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
@@ -72,23 +77,29 @@ public class tele_op_xeo_alfa extends OpMode {
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
 
-        motorLift = hardwareMap.dcMotor.get("motor_lift");
-        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorLift = hardwareMap.dcMotor.get("motor_lift");
+        //motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        motorHex = hardwareMap.dcMotor.get("motor_hex");
+        //motorHex = hardwareMap.dcMotor.get("motor_hex");
         motorSurub= hardwareMap.dcMotor.get("motor_nebun");
         team=hardwareMap.servo.get("smart_servo");
         //butonFata = hardwareMap.digitalChannel.get("buton_fata");
-        motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+       /* motorSurub.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorSurub.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
+
         motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor_power = 0.5;
 
-        digitalTouch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+        automatizare = 0;
+
+        //digitalTouch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
 
         // set the digital channel to input.
-        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        //digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -100,11 +111,14 @@ public class tele_op_xeo_alfa extends OpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
+        /*NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
         robot.attachMotors(motorFrontRight, motorBackLeft, motorBackRight, motorBackLeft);
-        robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.AUTONOMOUS);
-        robot.setMotorPower(5);
-
+        robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.TELEOP);
+        robot.setMotorPower(0.66);
+        robot.opModeLoop();
+*/
+        servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
+        servo_adunare_drepta = hardwareMap.crservo.get("servo_adunare_drepta");
     }
 
     private void Miscare(){
@@ -198,24 +212,33 @@ public class tele_op_xeo_alfa extends OpMode {
     }
 
     private void controlSurub(){
-        telemetry.addData("encoder surub", motorSurub.getCurrentPosition());
-        /*double position = motorSurub.getCurrentPosition();
-        if (position < 5900 && 0<-gamepad2.left_stick_y)
+        //telemetry.addData("encoder surub", motorSurub.getCurrentPosition());
+        double position = motorSurub.getCurrentPosition();
+
             motorSurub.setPower(-gamepad2.left_stick_y);
-        else
-            motorSurub.setPower(0);
-        if (position > 20 && 0>-gamepad2.left_stick_y)
-            motorSurub.setPower(-gamepad2.left_stick_y);
-        else
-            motorSurub.setPower(0);
-        if(gamepad2.left_stick_y == 0)
-            motorSurub.setPower(0);*/
-        motorSurub.setPower(-gamepad2.left_stick_y);
+
+        if (gamepad2.x)
+        {
+            motorSurub.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorSurub.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            motorSurub.setTargetPosition(10);
+            motorSurub.setPower(0.66);
+            automatizare = 1;
+        }
+        if (automatizare == 1 && !motorSurub.isBusy()){
+            automatizare = 2;
+            urca = true;
+        }
+        if (automatizare == 2 && !urca){
+            automatizare = 0;
+            coboara = true;
+        }
+        //TODO automatizare lift
     }
 
     private void controlLift(){
-        double lift_position = -motorLift.getCurrentPosition();
-        double lift_power = gamepad2.right_stick_y;
+        //double lift_position = -motorLift.getCurrentPosition();
+        //double lift_power = gamepad2.right_stick_y;
 /*
         telemetry.addData("Lift", lift_position);
         telemetry.addData("Lift", lift_power);
@@ -240,19 +263,22 @@ public class tele_op_xeo_alfa extends OpMode {
             return;
         }*/
 
-        motorLift.setPower(lift_power);
-        if(gamepad2.right_stick_y == 0){
-            motorLift.setPower(0);
-        }
+       //motorLift.setPower(lift_power);
     }
 
     private void controlPeri(){
-        if (gamepad2.a)
-            motorHex.setPower(0.66);
-        if (gamepad2.b)
-            motorHex.setPower(-0.11*6);
-        if (!gamepad2.a && !gamepad2.b)
-            motorHex.setPower(0);
+        if (gamepad2.a){
+            servo_adunare_drepta.setPower(1);
+            servo_adunare_stanga.setPower(-1);
+            return;
+        }
+        if (gamepad2.b) {
+            servo_adunare_drepta.setPower(-1);
+            servo_adunare_stanga.setPower(1);
+            return;
+        }
+            servo_adunare_drepta.setPower(0);
+            servo_adunare_stanga.setPower(0);
     }
 
     @Override
@@ -268,6 +294,10 @@ public class tele_op_xeo_alfa extends OpMode {
 
         controlLift();
 
+        //motorSurub.setPower(-gamepad2.left_stick_y);
+        double position = motorSurub.getCurrentPosition();
+        telemetry.addData("extindere ", position);
+        telemetry.addData("automatizare ", automatizare);
         //telemetry.addData("Button state: ", digitalTouch.getState());
         telemetry.update();
     }

@@ -23,7 +23,7 @@ public class NClaudiuOmniDirectionalMovement {
         gamepad = null;
     }
 
-    public void OPmodeLoop(){
+    public void opModeLoop(){
         float gamepap_left_y = -gamepad.left_stick_y ;
         float gamepad_left_x = -gamepad.left_stick_x ;
         float gamepad_right_x = -gamepad.right_stick_x;
