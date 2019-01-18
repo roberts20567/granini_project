@@ -24,6 +24,11 @@ public class EncoderTest extends LinearOpMode{
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_3");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_4");
 
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -31,6 +36,8 @@ public class EncoderTest extends LinearOpMode{
 
         motorFrontRight.setTargetPosition(target);
         motorBackLeft.setTargetPosition(target);
+        motorFrontLeft.setTargetPosition(target);
+        motorBackRight.setTargetPosition(target);
 
         telemetry.addData(">", "Press Play to start tracking");
         telemetry.update();
@@ -40,6 +47,8 @@ public class EncoderTest extends LinearOpMode{
 
             motorBackLeft.setPower(0.4);
             motorFrontRight.setPower(0.4);
+            motorBackRight.setPower(0.4);
+            motorFrontLeft.setPower(0.4);
             telemetry.addData("Position BL:" ,motorBackLeft.getCurrentPosition());
             telemetry.addData("Position BR:" ,motorBackRight.getCurrentPosition());
             telemetry.addData("Position FL:" ,motorFrontLeft.getCurrentPosition());

@@ -14,7 +14,7 @@ public class NClaudiuOmniDirectionalMovement {
     private double motor_power;
     private double current_angle;
     private boolean pow_active;
-    private static final double wheel_rotation_per_angle = 1;
+    private static final double wheel_rotation_per_angle = 1167/90;
 
     public NClaudiuOmniDirectionalMovement(){
         motor_power = 0.66;
@@ -25,7 +25,7 @@ public class NClaudiuOmniDirectionalMovement {
 
     public void opModeLoop(){
         float gamepap_left_y = -gamepad.left_stick_y ;
-        float gamepad_left_x = -gamepad.left_stick_x ;
+        float gamepad_left_x = gamepad.left_stick_x ;
         float gamepad_right_x = -gamepad.right_stick_x;
 
         if(pow_active) {
@@ -49,8 +49,8 @@ public class NClaudiuOmniDirectionalMovement {
 
         motor_front_right.setPower(FrontRight * motor_power);
         motor_front_left.setPower(FrontLeft * motor_power);
-        motor_back_right.setPower(BackLeft * motor_power);
-        motor_back_left.setPower(BackRight * motor_power);
+        motor_back_right.setPower(BackRight * motor_power);
+        motor_back_left.setPower(BackLeft * motor_power);
     }
 
     public enum DrivingMode {
@@ -61,11 +61,12 @@ public class NClaudiuOmniDirectionalMovement {
     public void setDrivingMode(DrivingMode driving_mode){
         switch (driving_mode){
             case AUTONOMOUS:
-                motorsSetMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorsSetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorsSetMode(DcMotor.RunMode.RUN_TO_POSITION);
                 break;
             case TELEOP:
-                motorsSetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorsSetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorsSetMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 break;
         }
     }
@@ -78,8 +79,9 @@ public class NClaudiuOmniDirectionalMovement {
     }
 
     public void moveToDirection(double distance, double direction){
-        double x = 1;
-        double y = 0;
+        direction = Math.toRadians(direction);
+        double x = Math.cos(direction);
+        double y = Math.sin(direction);
 
         int FrontLeft = (int)(-y - x);
         int FrontRight = (int)(y - x);
@@ -90,6 +92,11 @@ public class NClaudiuOmniDirectionalMovement {
         motor_front_left.setTargetPosition(FrontLeft);
         motor_back_right.setTargetPosition(BackRight);
         motor_back_left.setTargetPosition(BackLeft);
+        motor_front_right.setPower(motor_power);
+        motor_front_left.setPower(motor_power);
+        motor_back_right.setPower(motor_power);
+        motor_back_left.setPower(motor_power);
+        while (motorsAreBusy()){}
     }
 
     public void rotateToAngleUsingEncoders(double angle){
@@ -98,6 +105,16 @@ public class NClaudiuOmniDirectionalMovement {
         motor_front_left.setTargetPosition(steps);
         motor_back_right.setTargetPosition(steps);
         motor_back_left.setTargetPosition(steps);
+        motor_front_right.setPower(motor_power);
+        motor_front_left.setPower(motor_power);
+        motor_back_right.setPower(motor_power);
+        motor_back_left.setPower(motor_power);
+        //while (motorsAreBusy()){}
+    }
+
+    private boolean motorsAreBusy(){
+        return motor_front_right.isBusy() || motor_front_left.isBusy()
+                || motor_back_right.isBusy() || motor_back_left.isBusy();
     }
 
     /*public void rotateToAngleUsingEncoders(int angle){
