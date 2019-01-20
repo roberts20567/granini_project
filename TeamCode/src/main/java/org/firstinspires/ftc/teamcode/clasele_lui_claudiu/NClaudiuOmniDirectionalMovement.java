@@ -83,10 +83,10 @@ public class NClaudiuOmniDirectionalMovement {
         double x = Math.cos(direction);
         double y = Math.sin(direction);
 
-        int FrontLeft = (int)(-y - x);
-        int FrontRight = (int)(y - x);
-        int BackRight = (int)(y + x);
-        int BackLeft = (int)(-y + x);
+        int FrontLeft = (int)((-y - x) * distance);
+        int FrontRight = (int)((y - x) * distance);
+        int BackRight = (int)((y + x) * distance);
+        int BackLeft = (int)((-y + x) * distance);
 
         motor_front_right.setTargetPosition(FrontRight);
         motor_front_left.setTargetPosition(FrontLeft);
@@ -94,21 +94,21 @@ public class NClaudiuOmniDirectionalMovement {
         motor_back_left.setTargetPosition(BackLeft);
         motor_front_right.setPower(motor_power);
         motor_front_left.setPower(motor_power);
-        motor_back_right.setPower(motor_power);
         motor_back_left.setPower(motor_power);
-        while (motorsAreBusy()){}
+        motor_back_right.setPower(motor_power);
+        //while (motorsAreBusy()){}
     }
 
-    public void rotateToAngleUsingEncoders(double angle){
+    public void rotateToAngle(double angle){
         int steps = (int)(angle * wheel_rotation_per_angle);
-        motor_front_right.setTargetPosition(steps);
+        /*motor_front_right.setTargetPosition(steps);*/
         motor_front_left.setTargetPosition(steps);
         motor_back_right.setTargetPosition(steps);
-        motor_back_left.setTargetPosition(steps);
-        motor_front_right.setPower(motor_power);
+        /*motor_back_left.setTargetPosition(steps);*/
+        /*motor_front_right.setPower(motor_power);*/
         motor_front_left.setPower(motor_power);
         motor_back_right.setPower(motor_power);
-        motor_back_left.setPower(motor_power);
+        /*motor_back_left.setPower(motor_power);*/
         //while (motorsAreBusy()){}
     }
 

@@ -28,6 +28,14 @@ public class Teleop_Timisoara extends OpMode {
     private CRServo servo_adunare_drepta;
     private Servo servo_cuva;
 
+    private double vitezaMotoare = 0.66;
+
+    private int brat_jos = -640;
+    private int brat_sus = 0;
+    private int treshold = 150;
+
+
+
     @Override
     public void init() {
         // <movement>
@@ -38,7 +46,7 @@ public class Teleop_Timisoara extends OpMode {
         robot.attachMotors(motorFrontRight, motorFrontLeft, motorBackRight, motorBackLeft);
         robot.setGamepad(gamepad1);
         robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.TELEOP);
-        robot.setMotorPower(0.66);
+        robot.setMotorPower(vitezaMotoare);
         // </movement>
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
@@ -52,9 +60,10 @@ public class Teleop_Timisoara extends OpMode {
 
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        /*BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
@@ -62,13 +71,14 @@ public class Teleop_Timisoara extends OpMode {
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+        imu.initialize(parameters);*/
    }
 
     @Override
     public void loop() {
         robot.opModeLoop();
 
+        controlViteza();
         controlPeri();
         controlBrat();
         controlSurub();
@@ -76,40 +86,42 @@ public class Teleop_Timisoara extends OpMode {
         controlCuva();
     }
 
+
+
     @Override
     public void stop(){
         robot.stop();
     }
 
+    private void controlViteza() {
+
+        robot.setMotorPower(vitezaMotoare + gamepad1.right_trigger - gamepad1.left_trigger);
+
+    }
+
     private void controlBrat(){
-        float currentPosition = -motorRidicare.getCurrentPosition();
+        int currentPosition = -motorRidicare.getCurrentPosition();
         telemetry.addData("Motor brat: ", currentPosition);
 
-        if(gamepad2.dpad_down){//coborare
-            motorRidicare.setPower(0.8);
+        if(gamepad2.dpad_up){//urcare
+            motorRidicare.setPower(-0.9);
             coboara = true;
             urca = false;
         }
         if(coboara){
-            if(currentPosition <= -750 && currentPosition >= -800)  {
-                motorRidicare.setPower(0.1);
-                coboara = false;
-                sleep(300);
-                motorRidicare.setPower(0);
-            }
-            if(currentPosition <-500){
+            if(currentPosition<500){
                 motorRidicare.setPower(0);
                 coboara = false;
             }
         }
-        if(gamepad2.dpad_up)
-        {//urcare
-            motorRidicare.setPower(-0.8);
+        if(gamepad2.dpad_down)
+        {//coborare
+            motorRidicare.setPower(0.9);
             urca = true;
             coboara = false;
         }
         if(urca){
-            if(currentPosition >-300){
+            if(currentPosition<500){
                 motorRidicare.setPower(0);
                 urca = false;
             }
@@ -144,7 +156,7 @@ public class Teleop_Timisoara extends OpMode {
     private void controlCuva() {
 
         if (gamepad2.right_bumper)
-            servo_cuva.setPosition(0.15);
+            servo_cuva.setPosition(0.35);
 
         if (gamepad2.left_bumper)
             servo_cuva.setPosition(0);
