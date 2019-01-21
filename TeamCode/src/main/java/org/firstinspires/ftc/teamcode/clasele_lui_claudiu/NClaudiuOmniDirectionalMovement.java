@@ -88,10 +88,10 @@ public class NClaudiuOmniDirectionalMovement {
         int BackRight = (int)((y + x) * distance);
         int BackLeft = (int)((-y + x) * distance);
 
-        motor_front_right.setTargetPosition(FrontRight);
-        motor_front_left.setTargetPosition(FrontLeft);
-        motor_back_right.setTargetPosition(BackRight);
-        motor_back_left.setTargetPosition(BackLeft);
+        motor_front_right.setTargetPosition(motor_front_right.getTargetPosition() + FrontRight);
+        motor_front_left.setTargetPosition(motor_front_left.getTargetPosition() + FrontLeft);
+        motor_back_right.setTargetPosition(motor_back_right.getTargetPosition() + BackRight);
+        motor_back_left.setTargetPosition(motor_back_left.getTargetPosition() + BackLeft);
         motor_front_right.setPower(motor_power);
         motor_front_left.setPower(motor_power);
         motor_back_left.setPower(motor_power);
@@ -101,14 +101,15 @@ public class NClaudiuOmniDirectionalMovement {
 
     public void rotateToAngle(double angle){
         int steps = (int)(angle * wheel_rotation_per_angle);
-        /*motor_front_right.setTargetPosition(steps);*/
-        motor_front_left.setTargetPosition(steps);
-        motor_back_right.setTargetPosition(steps);
-        /*motor_back_left.setTargetPosition(steps);*/
-        /*motor_front_right.setPower(motor_power);*/
+        motor_front_right.setTargetPosition(motor_front_right.getTargetPosition() + steps);
+        motor_front_left.setTargetPosition(motor_front_left.getTargetPosition() + steps);
+        motor_back_right.setTargetPosition(motor_back_right.getTargetPosition() + steps);
+        motor_back_left.setTargetPosition(motor_back_left.getTargetPosition() + steps);
+        // set motor power
+        motor_front_right.setPower(motor_power);
         motor_front_left.setPower(motor_power);
         motor_back_right.setPower(motor_power);
-        /*motor_back_left.setPower(motor_power);*/
+        motor_back_left.setPower(motor_power);
         //while (motorsAreBusy()){}
     }
 
@@ -116,10 +117,6 @@ public class NClaudiuOmniDirectionalMovement {
         return motor_front_right.isBusy() || motor_front_left.isBusy()
                 || motor_back_right.isBusy() || motor_back_left.isBusy();
     }
-
-    /*public void rotateToAngleUsingEncoders(int angle){
-        rotateToAngleUsingEncoders((double)angle);
-    }*/
 
     public void attachMotors(DcMotor motor_front_right, DcMotor motor_front_left, DcMotor motor_back_right, DcMotor motor_back_left){
         this.motor_front_right = motor_front_right;

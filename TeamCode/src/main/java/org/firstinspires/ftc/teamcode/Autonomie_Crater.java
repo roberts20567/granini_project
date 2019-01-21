@@ -66,7 +66,7 @@ public class Autonomie_Crater extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-       Init();/*
+       Init();
         initGyro();
         while (!isStarted()){
             telemetry.addData("Back Left: ", motorBackLeft.getCurrentPosition());
@@ -117,7 +117,7 @@ public class Autonomie_Crater extends LinearOpMode {
         Thread.sleep(2000);
         servoTeamMarker.setPosition(-1);
         Thread.sleep(2000);
-*/
+
         telemetry.addData("CEAU",6);
         Thread.sleep(1000);
 
