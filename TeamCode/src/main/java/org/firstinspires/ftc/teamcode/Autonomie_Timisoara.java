@@ -46,7 +46,7 @@ public class Autonomie_Timisoara extends LinearOpMode {
         telemetry.addData("Position FR:" ,motorFrontRight.getCurrentPosition());
         telemetry.update();
         motorLift.setPower(0);
-        coborareLift();
+        coborareRobot();
         sleep(2000);
         robot.moveToDirection(400, -90);
         sleep(3000);
@@ -72,10 +72,10 @@ public class Autonomie_Timisoara extends LinearOpMode {
 
     }
 
-    private void coborareLift() {
+    private void coborareRobot() {
 
         motorLift.setPower(-0.5);
-        sleep(4500);
+        sleep(1000);
         motorLift.setPower(0);
 
     }

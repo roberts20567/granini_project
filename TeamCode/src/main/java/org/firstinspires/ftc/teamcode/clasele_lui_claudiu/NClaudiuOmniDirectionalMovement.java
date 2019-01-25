@@ -13,6 +13,7 @@ public class NClaudiuOmniDirectionalMovement {
     private Gamepad gamepad;
     private double motor_power;
     private double current_angle;
+    private double calibration_angle = 0;
     private boolean pow_active;
     private static final double wheel_rotation_per_angle = 1167/90;
 
@@ -30,7 +31,7 @@ public class NClaudiuOmniDirectionalMovement {
 
         if(pow_active) {
             //double angle = Math.toRadians(angles.firstAngle - start_angle);
-            double angle = current_angle;
+            double angle = current_angle - calibration_angle;
             double motorX = Math.cos(angle) * gamepad_left_x - Math.sin(angle) * gamepap_left_y;
             double motorY = Math.cos(angle) * gamepap_left_y + Math.sin(angle) * gamepad_left_x;
             gamepad_left_x = (float) motorX;
@@ -139,6 +140,19 @@ public class NClaudiuOmniDirectionalMovement {
         motor_back_left.setMode(mode);
     }
 
+    public void turnOnPow(double angle){
+        pow_active = true;
+        calibration_angle = angle;
+    }
+
+    public void turnOffPow(){
+        pow_active = false;
+    }
+
+    public double getCalibrationAngle(){
+        return calibration_angle;
+    }
+
     public double getMotorPower(){
         return motor_power;
     }
@@ -153,6 +167,14 @@ public class NClaudiuOmniDirectionalMovement {
 
     public void setGamepad(Gamepad gamepad) {
         this.gamepad = gamepad;
+    }
+
+    public double getCurrentAngle() {
+        return current_angle;
+    }
+
+    public void setCurrentAngle(double angle) {
+        current_angle = angle;
     }
 
 }
