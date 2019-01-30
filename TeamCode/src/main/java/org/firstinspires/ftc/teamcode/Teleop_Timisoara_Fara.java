@@ -1,19 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
 
-@TeleOp(name = "Xeo18-19: Tele-OP-Timisoara", group = "Xeo18-19")
-public class Teleop_Timisoara extends OpMode {
+@TeleOp(name = "Xeo18-19: Tele-OP-Timisoara Fara Faras in Init", group = "Xeo18-19")
+public class Teleop_Timisoara_Fara extends OpMode {
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     // </movement>
     private DcMotor motorRidicare;
@@ -74,11 +72,11 @@ public class Teleop_Timisoara extends OpMode {
         imu.initialize(parameters);
         */
 
-        motorRidicare.setPower(-0.5);
+        /*motorRidicare.setPower(-0.5);
         sleep(800);
         motorRidicare.setPower(0);
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
    }
 
@@ -134,7 +132,7 @@ public class Teleop_Timisoara extends OpMode {
 
     private void controlViteza() {
 
-        robot.setMotorPower(vitezaMotoare + gamepad1.right_trigger - (gamepad1.left_trigger/2));
+        robot.setMotorPower(vitezaMotoare + gamepad1.right_trigger - gamepad1.left_trigger);
 
     }
 
@@ -195,10 +193,10 @@ public class Teleop_Timisoara extends OpMode {
     boolean sus = false;
     private void controlCuva() {
 
-        if (gamepad2.left_bumper)
+        if (gamepad2.right_bumper)
             servo_cuva.setPosition(0);
 
-        if (gamepad2.right_bumper)
+        if (gamepad2.left_bumper)
             servo_cuva.setPosition(0.35);
 
     }

@@ -5,11 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiu;
 import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
 
-@Autonomous(name="Autonomie Test")
-public class test extends LinearOpMode {
+@Autonomous(name="Autonomie Timisoara Crater")
+public class Autonomie_Timisoara_Crater extends LinearOpMode {
 
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     private DcMotor motorLift;
@@ -31,6 +30,7 @@ public class test extends LinearOpMode {
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
         motorLift = hardwareMap.dcMotor.get("motor_lift");
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
+
         servo_team_mark=hardwareMap.servo.get("smart_servo");
 
         robot.attachMotors(motorFrontRight, motorFrontLeft, motorBackRight, motorBackLeft);
@@ -50,27 +50,33 @@ public class test extends LinearOpMode {
         coborareRobot();
         sleep(2000);
         robot.moveToDirection(400, 90);
-        sleep(1500);
-        //resetEncoders();
-        robot.moveToDirection(2850, 0);
-        sleep(3000);
-        //resetEncoders();
-        robot.rotateToAngle(-165);
-        sleep(3000);
-        robot.moveToDirection(1000, 90);
-        sleep(3000);
-
-        servo_team_mark.setPosition(-1);
         sleep(2000);
+        //resetEncoders();
+        robot.moveToDirection(800, 0);
+        sleep(2000);
+        //resetEncoders();
+        robot.rotateToAngle(90);
+        sleep(4000);
 
-        robot.rotateToAngle(110);
-        sleep(2500);
-        robot.moveToDirection(4000, -90);
-        sleep(5000);
+        robot.moveToDirection(2000, -90);
+        sleep(3000);
+
         motorRidicare.setPower(0.5);
         sleep(2000);
         motorRidicare.setPower(0);
         sleep(11);
+
+        /*
+        motorFrontRight.setTargetPosition(target);
+        motorBackLeft.setTargetPosition(target);
+        motorFrontLeft.setTargetPosition(target);
+        motorBackRight.setTargetPosition(target);
+        motorBackLeft.setPower(0.4);
+        motorFrontRight.setPower(0.4);
+        motorBackRight.setPower(0.4);
+        motorFrontLeft.setPower(0.4);*/
+
+
     }
 
     private void coborareRobot() {
