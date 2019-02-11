@@ -12,10 +12,12 @@ public class NClaudiuOmniDirectionalMovement {
     private DcMotor motor_back_left;
     private Gamepad gamepad;
     private double motor_power;
+    private double rotation_power;
     private double current_angle;
     private double calibration_angle = 0;
     private boolean pow_active;
     private static final double wheel_rotation_per_angle = 1167/90;
+    private static final double tics_per_centimeter = 23.04;
 
     public NClaudiuOmniDirectionalMovement(){
         motor_power = 0.66;
@@ -25,7 +27,7 @@ public class NClaudiuOmniDirectionalMovement {
     }
 
     public void opModeLoop(){
-        float gamepap_left_y = -gamepad.left_stick_y ;
+        float gamepap_left_y = gamepad.left_stick_y ;
         float gamepad_left_x = gamepad.left_stick_x ;
         float gamepad_right_x = -gamepad.right_stick_x;
 
@@ -52,6 +54,14 @@ public class NClaudiuOmniDirectionalMovement {
         motor_front_left.setPower(FrontLeft * motor_power);
         motor_back_right.setPower(BackRight * motor_power);
         motor_back_left.setPower(BackLeft * motor_power);
+    }
+
+    public double getRotation_power() {
+        return rotation_power;
+    }
+
+    public void setRotation_power(double rotation_power) {
+        this.rotation_power = rotation_power;
     }
 
     public enum DrivingMode {
@@ -100,6 +110,11 @@ public class NClaudiuOmniDirectionalMovement {
         //while (motorsAreBusy()){}
     }
 
+    public void moveToDirectionCentimeters(double distance, double direction){
+        distance = distance * tics_per_centimeter;
+        moveToDirection(distance, direction);
+    }
+
     public void rotateToAngle(double angle){
         int steps = (int)(angle * wheel_rotation_per_angle);
         motor_front_right.setTargetPosition(motor_front_right.getTargetPosition() + steps);
@@ -111,6 +126,46 @@ public class NClaudiuOmniDirectionalMovement {
         motor_front_left.setPower(motor_power);
         motor_back_right.setPower(motor_power);
         motor_back_left.setPower(motor_power);
+        //while (motorsAreBusy()){}
+    }
+
+    public enum motor{
+        FRONT_LEFT,
+        FRONT_RIGHT,
+        BACK_LEFT,
+        BACK_RIGHT
+    }
+
+    public void rotateToAngle(double angle, motor motor){
+        int steps = (int)(angle * wheel_rotation_per_angle);
+        steps = steps * 2;
+        motor_front_right.setTargetPosition(motor_front_right.getTargetPosition() + steps);
+        motor_front_left.setTargetPosition(motor_front_left.getTargetPosition() + steps);
+        motor_back_right.setTargetPosition(motor_back_right.getTargetPosition() + steps);
+        motor_back_left.setTargetPosition(motor_back_left.getTargetPosition() + steps);
+        // set motor power
+        switch (motor) {
+
+            case FRONT_LEFT:
+                motor_front_left.setTargetPosition(motor_front_left.getTargetPosition() - steps);
+                break;
+            case FRONT_RIGHT:
+                motor_front_right.setTargetPosition(motor_front_right.getTargetPosition() - steps);
+                break;
+            case BACK_LEFT:
+                motor_back_left.setTargetPosition(motor_back_left.getTargetPosition() - steps);
+                break;
+            case BACK_RIGHT:
+                motor_back_right.setTargetPosition(motor_back_right.getTargetPosition() - steps);
+                break;
+
+        }
+
+        motor_front_right.setPower(motor_power);
+        motor_front_left.setPower(motor_power);
+        motor_back_right.setPower(motor_power);
+        motor_back_left.setPower(motor_power);
+
         //while (motorsAreBusy()){}
     }
 

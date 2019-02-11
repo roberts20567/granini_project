@@ -1,23 +1,24 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Tele_OP;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
 
-@TeleOp(name = "Xeo18-19: Tele-OP-Timisoara", group = "Xeo18-19")
+@TeleOp(name = "TeleOP Oradea")
 public class Teleop_Timisoara extends OpMode {
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     // </movement>
     private DcMotor motorRidicare;
     private DcMotor motorLift;
+    private DcMotor motorLift2;
+    private Lift lift;
+
     private DcMotor motorSurub;
     private Servo servo_team_mark;
     private boolean coboara = false;
@@ -28,12 +29,7 @@ public class Teleop_Timisoara extends OpMode {
     private CRServo servo_adunare_drepta;
     private Servo servo_cuva;
 
-    private double vitezaMotoare = 0.66;
-
-    private int brat_jos = -640;
-    private int brat_sus = 0;
-    private int treshold = 150;
-
+    private double vitezaMotoare = 0.44;
 
     @Override
     public void init() {
@@ -54,7 +50,12 @@ public class Teleop_Timisoara extends OpMode {
 
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
         motorLift = hardwareMap.dcMotor.get("motor_lift");
+        motorLift2 = hardwareMap.dcMotor.get("frate_motor_lift");
+        lift = new Lift(motorLift, motorLift2);
+
         motorSurub= hardwareMap.dcMotor.get("motor_nebun");
+        motorSurub.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorSurub.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         servo_team_mark=hardwareMap.servo.get("smart_servo");
 
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -74,49 +75,18 @@ public class Teleop_Timisoara extends OpMode {
         imu.initialize(parameters);
         */
 
-        motorRidicare.setPower(-0.5);
-        sleep(800);
+        //motorRidicare.setPower(-0.5);
+        //sleep(800);
         motorRidicare.setPower(0);
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
    }
 
-   private int automatizare = 0;
-
     @Override
     public void loop() {
         robot.opModeLoop();
-
-        if(gamepad2.x){
-            motorSurub.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorSurub.setTargetPosition(0);
-            motorSurub.setPower(0.5);
-            servo_cuva.setPosition(0.35);
-            automatizare = 1;
-        }
-
-        if(gamepad2.x && motorSurub.getCurrentPosition()<100){
-            motorSurub.setPower(0);
-            motorSurub.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motorRidicare.setPower(-0.9);
-            servo_cuva.setPosition(0.35);// ???
-            coboara = true;
-            urca = false;
-            automatizare = 2;
-        }
-
-        if(automatizare==2 && !urca){
-            motorRidicare.setPower(0.9);
-            urca = true;
-            coboara = false;
-            automatizare = 3;
-        }
-        if(automatizare==3 && !coboara){
-            automatizare = 0;
-        }
-
-
+        automatizare();
         controlViteza();
         controlPeri();
         controlBrat();
@@ -125,56 +95,64 @@ public class Teleop_Timisoara extends OpMode {
         controlCuva();
     }
 
-
-
     @Override
     public void stop(){
         robot.stop();
     }
 
-    private void controlViteza() {
+    private int auto = 0;
+    private void automatizare(){
+        telemetry.addData("extindere", motorSurub.getCurrentPosition());
 
-        robot.setMotorPower(vitezaMotoare + gamepad1.right_trigger - gamepad1.left_trigger);
+        if(gamepad2.x && auto==0){
+            auto = 1;
+            motorSurub.setPower(-0.9);
+            servo_cuva.setPosition(0);
+        }else if(auto==1 && motorSurub.getCurrentPosition()>-0){
+            auto = 0;
+            servo_cuva.setPosition(0.35);
+            sleep(400);
+            motorRidicare.setPower(-0.9);
+            sleep(600);
+            motorRidicare.setPower(0);
+        }
+
+        if(motorSurub.getCurrentPosition()<0 && auto==0){
+            servo_cuva.setPosition(0.05);
+        }
+    }
+
+    private void controlViteza() {
+        robot.setMotorPower(vitezaMotoare * (gamepad1.right_trigger + 1) / (gamepad1.left_trigger + 1));
 
     }
 
     private void controlBrat(){
         int currentPosition = motorRidicare.getCurrentPosition();
         telemetry.addData("Motor brat: ", currentPosition);
-
-        if(gamepad2.dpad_up){//urcare
+        if(gamepad2.dpad_up){
             motorRidicare.setPower(-0.9);
-            coboara = true;
-            urca = false;
+            sleep(600);
+            motorRidicare.setPower(0);
         }
-        if(coboara){
-            if(currentPosition<300){
-                motorRidicare.setPower(0);
-                coboara = false;
-            }
-        }
-        if(gamepad2.dpad_down)
-        {//coborare
-            motorRidicare.setPower(0.9);
-            urca = true;
-            coboara = false;
-        }
-        if(urca){
-            if(currentPosition<500){
-                motorRidicare.setPower(0);
-                urca = false;
-            }
+        if(gamepad2.dpad_down){
+            motorRidicare.setPower(0.5);
+            sleep(300);
+            motorRidicare.setPower(0);
         }
     }
 
     private void controlSurub(){
-        if(automatizare==0)
-            motorSurub.setPower(gamepad2.left_stick_y);
+        if(auto==0) {
+            motorSurub.setPower(-gamepad2.left_stick_y);
+        }
     }
 
     private void controlLift(){
         double lift_power = gamepad2.right_stick_y;
-        motorLift.setPower(lift_power);
+        lift.setPower(lift_power);
+        telemetry.addData("lift", motorLift.getCurrentPosition());
+
     }
 
     private void controlPeri(){
@@ -195,10 +173,10 @@ public class Teleop_Timisoara extends OpMode {
     boolean sus = false;
     private void controlCuva() {
 
-        if (gamepad2.right_bumper)
+        if(gamepad2.right_bumper)
             servo_cuva.setPosition(0);
 
-        if (gamepad2.left_bumper)
+        if(gamepad2.left_bumper)
             servo_cuva.setPosition(0.35);
 
     }
@@ -208,5 +186,41 @@ public class Teleop_Timisoara extends OpMode {
         while (System.currentTimeMillis() - start_time < x){
             int a;
         }
+    }
+}
+
+class Lift{
+    private DcMotor motorLift1;
+    private DcMotor motorLift2;
+
+    Lift(DcMotor motor_1, DcMotor motor_2){
+        motorLift1 = motor_1;
+        motorLift2 = motor_2;
+    }
+
+    void setPower(double power){
+        motorLift1.setPower(power);
+        motorLift2.setPower(-power);
+    }
+
+    void setTargetPOsition(int target){
+        motorLift1.setTargetPosition(target);
+        motorLift2.setTargetPosition(-target);
+    }
+
+    public DcMotor getMotorLift1() {
+        return motorLift1;
+    }
+
+    public void setMotorLift1(DcMotor motorLift1) {
+        this.motorLift1 = motorLift1;
+    }
+
+    public DcMotor getMotorLift2() {
+        return motorLift2;
+    }
+
+    public void setMotorLift2(DcMotor motorLift2) {
+        this.motorLift2 = motorLift2;
     }
 }
