@@ -29,7 +29,7 @@ public class Teleop_Timisoara extends OpMode {
     private CRServo servo_adunare_drepta;
     private Servo servo_cuva;
 
-    private double vitezaMotoare = 0.44;
+    private double vitezaMotoare = 0.66;
 
     @Override
     public void init() {
@@ -177,7 +177,7 @@ public class Teleop_Timisoara extends OpMode {
             servo_cuva.setPosition(0);
 
         if(gamepad2.left_bumper)
-            servo_cuva.setPosition(0.35);
+            servo_cuva.setPosition(0.4);
 
     }
 

@@ -52,7 +52,7 @@ public class AutonomiePatrat extends LinearOpMode {
 
         robot.attachMotors(motorFrontRight, motorFrontLeft, motorBackRight, motorBackLeft);
         robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.AUTONOMOUS);
-        robot.setMotorPower(0.44);
+        robot.setMotorPower(0.5);
 
         motorLift = hardwareMap.dcMotor.get("motor_lift");
         frateMotorLift = hardwareMap.dcMotor.get("frate_motor_lift");
@@ -247,6 +247,94 @@ public class AutonomiePatrat extends LinearOpMode {
 
     }
 
+    private void iaCubMijloc(){
+        robot.moveToDirectionCentimeters(10, 0);
+        sleep(1000);
+
+        robot.rotateToAngle(100);
+        sleep(1000);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+
+        servo_adunare_drepta.setPower(1);
+        servo_adunare_stanga.setPower(-1);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(70, -90);
+        sleep(1800);
+
+        servo_adunare_drepta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+        motorRidicare.setPower(-1);
+        sleep(600);
+        motorRidicare.setPower(-0.11);
+
+        robot.moveToDirectionCentimeters(40, -90);
+        sleep(1000);
+
+        robot.rotateToAngle(-140);
+        sleep(1800);
+
+        robot.moveToDirectionCentimeters(30, 0);
+        sleep(1000);
+
+        servo_team_mark.setPosition(-1);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(170,-90);
+        sleep(3000);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+    }
+
+    private void iaCubDreapta(){
+        robot.moveToDirectionCentimeters(10, 0);
+        sleep(1000);
+
+        robot.rotateToAngle(130);
+        sleep(1000);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+
+        servo_adunare_drepta.setPower(1);
+        servo_adunare_stanga.setPower(-1);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(70, -90);
+        sleep(2000);
+
+        servo_adunare_drepta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+        motorRidicare.setPower(-1);
+        sleep(600);
+        motorRidicare.setPower(-0.11);
+
+        robot.moveToDirectionCentimeters(40, -90);
+        sleep(1000);
+
+        robot.rotateToAngle(-170);
+        sleep(2000);
+
+        robot.moveToDirectionCentimeters(70,0);
+        sleep(2000);
+
+        servo_team_mark.setPosition(-1);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(185, -90);
+        sleep(2800);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         initRobot();
@@ -258,33 +346,26 @@ public class AutonomiePatrat extends LinearOpMode {
             tfod.activate();
             sleep(500);
         }
-
-        /*while(!isStarted()){
-            telemetry.addData("Gold position", detectieGold());
-        }*/
-
         waitForStart();
 
         mPlayer.start();
 
         int gold_position = detectieGold();
-
         //coborareRobot();
-
         telemetry.addData("Gold position", gold_position);
         telemetry.update();
 
         switch (gold_position){
             case 0:
-                doboaraNimic();
+                //doboaraNimic();
             case 1:
                 iaCubStanga();
                 break;
             case 2:
-                doboaraGoldMijloc();
+                iaCubMijloc();
                 break;
             case 3:
-                doboaraGoldDreapta();
+                iaCubDreapta();
                 break;
         }
     }
