@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectiona
 
 import java.util.List;
 
-@Autonomous(name = "Patrat :)")
-public class AutonomiePatrat extends LinearOpMode {
+@Autonomous(name = "Crater :)")
+public class AutonomieCrater extends LinearOpMode {
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     private DcMotor motorFrontLeft;
     private DcMotor motorBackLeft;
@@ -119,152 +119,6 @@ public class AutonomiePatrat extends LinearOpMode {
         return gold_mineral_position;
     }
 
-    private void doboaraNimic(){
-        robot.moveToDirection(2850, 0);
-        sleep(3000);
-        robot.rotateToAngle(-165);
-        sleep(3000);
-        robot.moveToDirection(1000, 90);
-        sleep(3000);
-
-        servo_team_mark.setPosition(-1);
-        sleep(2000);
-
-        robot.rotateToAngle(110);
-        sleep(2500);
-        robot.moveToDirection(4000, -90);
-        sleep(5000);
-        motorRidicare.setPower(0.5);
-        sleep(2000);
-        motorRidicare.setPower(0);
-        sleep(11);
-    }
-
-    private void iaCubStanga(){
-        robot.rotateToAngle(70);
-        sleep(1000);
-
-        motorRidicare.setPower(0.5);
-        sleep(500);
-
-        motorRidicare.setPower(0);
-        servo_adunare_drepta.setPower(1);
-        servo_adunare_stanga.setPower(-1);
-        sleep(500);
-
-        robot.moveToDirectionCentimeters(70, -90);
-        sleep(2500);
-
-        servo_adunare_drepta.setPower(0);
-        servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
-        sleep(600);
-        motorRidicare.setPower(-0.11);
-
-        robot.moveToDirectionCentimeters(40, -90);
-        sleep(1000);
-
-        robot.rotateToAngle(-106);
-        sleep(1700);
-
-        robot.moveToDirectionCentimeters(40, 90);
-        sleep(1500);
-
-        servo_team_mark.setPosition(-1);
-        sleep(500);
-
-        robot.moveToDirectionCentimeters(170, -90);
-        sleep(3000);
-        servo_team_mark.setPosition(0);
-
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-
-    }
-
-    private void iaCubMijloc(){
-        robot.rotateToAngle(100);
-        sleep(1000);
-
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-
-        servo_adunare_drepta.setPower(1);
-        servo_adunare_stanga.setPower(-1);
-        sleep(500);
-
-        robot.moveToDirectionCentimeters(70, -90);
-        sleep(1800);
-
-        servo_adunare_drepta.setPower(0);
-        servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
-        sleep(600);
-        motorRidicare.setPower(-0.11);
-
-        robot.moveToDirectionCentimeters(40, -90);
-        sleep(1000);
-
-        robot.rotateToAngle(-140);
-        sleep(1800);
-
-        robot.moveToDirectionCentimeters(30, 0);
-        sleep(1000);
-
-        servo_team_mark.setPosition(-1);
-        sleep(500);
-
-        robot.moveToDirectionCentimeters(170,-90);
-        sleep(3000);
-
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-    }
-
-    private void iaCubDreapta(){
-        robot.rotateToAngle(130);
-        sleep(1000);
-
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-
-        servo_adunare_drepta.setPower(1);
-        servo_adunare_stanga.setPower(-1);
-        sleep(500);
-
-        robot.moveToDirectionCentimeters(70, -90);
-        sleep(2000);
-
-        servo_adunare_drepta.setPower(0);
-        servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
-        sleep(600);
-        motorRidicare.setPower(-0.11);
-
-        robot.moveToDirectionCentimeters(40, -90);
-        sleep(1000);
-
-        robot.rotateToAngle(-170);
-        sleep(2000);
-
-        robot.moveToDirectionCentimeters(70,0);
-        sleep(2000);
-
-        servo_team_mark.setPosition(-1);
-        sleep(500);
-
-        robot.moveToDirectionCentimeters(185, -90);
-        sleep(2800);
-
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-    }
-
     private void coborareRobot(){
         lift.setPower(0.66);
         sleep(1700);
@@ -279,6 +133,11 @@ public class AutonomiePatrat extends LinearOpMode {
         lift.setPower(0);
         servo_cuva.setPosition(pozitie_cuva_normal);
         sleep(500);
+    }
+
+    private void notCoborareRobot(){
+        robot.moveToDirectionCentimeters(10, 0);
+        sleep(1000);
     }
 
     @Override
@@ -302,10 +161,12 @@ public class AutonomiePatrat extends LinearOpMode {
         telemetry.update();
 
         coborareRobot();
+        //notCoborareRobot();
 
         switch (gold_position){
             case 0:
                 iaCubMijloc();
+                break;
             case 1:
                 iaCubStanga();
                 break;
@@ -316,43 +177,152 @@ public class AutonomiePatrat extends LinearOpMode {
                 iaCubDreapta();
                 break;
         }
-
     }
 
-    class Lift{
-        private DcMotor motorLift1;
-        private DcMotor motorLift2;
+    private void iaCubDreapta(){
+        robot.rotateToAngle(130);
+        sleep(1250);
 
-        Lift(DcMotor motor_1, DcMotor motor_2){
-            motorLift1 = motor_1;
-            motorLift2 = motor_2;
-        }
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
 
-        void setPower(double power){
-            motorLift1.setPower(power);
-            motorLift2.setPower(-power);
-        }
+        servo_adunare_drepta.setPower(1);
+        servo_adunare_stanga.setPower(-1);
+        sleep(500);
 
-        void setTargetPOsition(int target){
-            motorLift1.setTargetPosition(target);
-            motorLift2.setTargetPosition(-target);
-        }
+        robot.moveToDirectionCentimeters(40, -90);
+        sleep(2500);
 
-        public DcMotor getMotorLift1() {
-            return motorLift1;
-        }
+        servo_adunare_drepta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+        motorRidicare.setPower(-1);
+        sleep(600);
+        motorRidicare.setPower(-0.11);
 
-        public void setMotorLift1(DcMotor motorLift1) {
-            this.motorLift1 = motorLift1;
-        }
+        robot.rotateToAngle(-30);
+        sleep(750);
 
-        public DcMotor getMotorLift2() {
-            return motorLift2;
-        }
+        robot.moveToDirectionCentimeters(100, 180);
+        sleep(2000);
 
-        public void setMotorLift2(DcMotor motorLift2) {
-            this.motorLift2 = motorLift2;
-        }
+        robot.rotateToAngle(50);
+        sleep(1250);
+
+        robot.moveToDirectionCentimeters(30,180);
+        sleep(1000);
+
+        robot.moveToDirectionCentimeters(140, 90);
+        sleep(2500);
+
+        servo_team_mark.setPosition(-1);
+        sleep(1000);
+
+
+        robot.rotateToAngle(-5);
+        sleep(500);
+        robot.moveToDirectionCentimeters(170,-90);
+        sleep(3000);
+
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+    }
+
+    private void iaCubMijloc(){
+        robot.rotateToAngle(95);
+        sleep(1000);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+
+        servo_adunare_drepta.setPower(1);
+        servo_adunare_stanga.setPower(-1);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(35, -90);
+        sleep(2500);
+
+        servo_adunare_drepta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+        motorRidicare.setPower(-1);
+        sleep(600);
+        motorRidicare.setPower(-0.11);
+
+        robot.moveToDirectionCentimeters(75, 180);
+        sleep(1500);
+
+        robot.rotateToAngle(52.5);
+        sleep(1250);
+
+        robot.moveToDirectionCentimeters(43,180);
+        //cu 40 trece la limita pe langa mineralul aliat
+        sleep(1500);
+
+        robot.moveToDirectionCentimeters(150, 90);
+        sleep(2500);
+
+        servo_team_mark.setPosition(-1);
+        sleep(1000);
+
+        robot.rotateToAngle(-5);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(170,-90);
+        sleep(3000);
+
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+    }
+
+    private void iaCubStanga() {
+        robot.rotateToAngle(60);
+        sleep(1000);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
+
+        servo_adunare_drepta.setPower(1);
+        servo_adunare_stanga.setPower(-1);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(45, -90);
+        sleep(2500);
+
+        servo_adunare_drepta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+        motorRidicare.setPower(-1);
+        sleep(600);
+        motorRidicare.setPower(-0.11);
+
+        robot.moveToDirectionCentimeters(5, 90);
+        sleep(500);
+
+        robot.rotateToAngle(90);
+        sleep(2000);
+
+        robot.moveToDirectionCentimeters(80, 180);
+        sleep(2000);
+
+        robot.moveToDirectionCentimeters(160, 90);
+        sleep(2000);
+
+        servo_team_mark.setPosition(-1);
+        sleep(1000);
+
+        robot.rotateToAngle(-5);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(150,-90);
+        sleep(2500);
+
+        motorRidicare.setPower(0.5);
+        sleep(500);
+        motorRidicare.setPower(0);
     }
 }
-
