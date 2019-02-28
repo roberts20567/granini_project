@@ -261,14 +261,12 @@ public class AutonomieCrater extends LinearOpMode {
         //cu 40 trece la limita pe langa mineralul aliat
         sleep(1500);
 
-        robot.moveToDirectionCentimeters(150, 90);
+        robot.moveToDirectionCentimeters(135, 90);
         sleep(2500);
 
         servo_team_mark.setPosition(-1);
         sleep(1000);
 
-        robot.rotateToAngle(-5);
-        sleep(500);
 
         robot.moveToDirectionCentimeters(170,-90);
         sleep(3000);
@@ -291,7 +289,7 @@ public class AutonomieCrater extends LinearOpMode {
         servo_adunare_stanga.setPower(-1);
         sleep(500);
 
-        robot.moveToDirectionCentimeters(45, -90);
+        robot.moveToDirectionCentimeters(50, -90);
         sleep(2500);
 
         servo_adunare_drepta.setPower(0);
@@ -300,26 +298,24 @@ public class AutonomieCrater extends LinearOpMode {
         sleep(600);
         motorRidicare.setPower(-0.11);
 
-        robot.moveToDirectionCentimeters(5, 90);
-        sleep(500);
+        robot.moveToDirectionCentimeters(10, 90);
+        sleep(750);
 
         robot.rotateToAngle(90);
         sleep(2000);
 
-        robot.moveToDirectionCentimeters(80, 180);
-        sleep(2000);
+        robot.moveToDirectionCentimeters(120, 135);
+        sleep(3000);
 
-        robot.moveToDirectionCentimeters(160, 90);
-        sleep(2000);
+        robot.moveToDirectionCentimeters(80, 90);
+        sleep(1500);
 
         servo_team_mark.setPosition(-1);
         sleep(1000);
 
-        robot.rotateToAngle(-5);
-        sleep(500);
 
-        robot.moveToDirectionCentimeters(150,-90);
-        sleep(2500);
+        robot.moveToDirectionCentimeters(160,-90);
+        sleep(3000);
 
         motorRidicare.setPower(0.5);
         sleep(500);

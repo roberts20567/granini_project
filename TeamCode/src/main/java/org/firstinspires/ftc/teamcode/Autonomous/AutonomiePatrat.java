@@ -141,7 +141,7 @@ public class AutonomiePatrat extends LinearOpMode {
     }
 
     private void iaCubStanga(){
-        robot.rotateToAngle(70);
+        robot.rotateToAngle(60);
         sleep(1000);
 
         motorRidicare.setPower(0.5);
@@ -210,13 +210,13 @@ public class AutonomiePatrat extends LinearOpMode {
         robot.rotateToAngle(-140);
         sleep(1800);
 
-        robot.moveToDirectionCentimeters(30, 0);
+        robot.moveToDirectionCentimeters(35, 0);
         sleep(1000);
 
         servo_team_mark.setPosition(-1);
         sleep(500);
 
-        robot.moveToDirectionCentimeters(170,-90);
+        robot.moveToDirectionCentimeters(167.5,-90);
         sleep(3000);
 
         motorRidicare.setPower(0.5);
@@ -225,7 +225,7 @@ public class AutonomiePatrat extends LinearOpMode {
     }
 
     private void iaCubDreapta(){
-        robot.rotateToAngle(130);
+        robot.rotateToAngle(125);
         sleep(1000);
 
         motorRidicare.setPower(0.5);
@@ -245,10 +245,10 @@ public class AutonomiePatrat extends LinearOpMode {
         sleep(600);
         motorRidicare.setPower(-0.11);
 
-        robot.moveToDirectionCentimeters(40, -90);
-        sleep(1000);
+        robot.moveToDirectionCentimeters(50, -90);
+        sleep(1250);
 
-        robot.rotateToAngle(-170);
+        robot.rotateToAngle(-165);
         sleep(2000);
 
         robot.moveToDirectionCentimeters(70,0);
@@ -257,7 +257,7 @@ public class AutonomiePatrat extends LinearOpMode {
         servo_team_mark.setPosition(-1);
         sleep(500);
 
-        robot.moveToDirectionCentimeters(185, -90);
+        robot.moveToDirectionCentimeters(180, -90);
         sleep(2800);
 
         motorRidicare.setPower(0.5);
@@ -306,6 +306,7 @@ public class AutonomiePatrat extends LinearOpMode {
         switch (gold_position){
             case 0:
                 iaCubMijloc();
+                break;
             case 1:
                 iaCubStanga();
                 break;

@@ -74,6 +74,10 @@ public class NClaudiuOmniDirectionalMovement {
             case AUTONOMOUS:
                 motorsSetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 motorsSetMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motor_front_right.setTargetPosition(0);
+                motor_back_left.setTargetPosition(0);
+                motor_back_right.setTargetPosition(0);
+                motor_back_left.setTargetPosition(0);
                 break;
             case TELEOP:
                 motorsSetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
