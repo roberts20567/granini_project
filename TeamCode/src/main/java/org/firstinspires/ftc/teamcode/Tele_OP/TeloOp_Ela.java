@@ -48,38 +48,5 @@ public class TeloOp_Ela extends OpMode {
             motorBackRight.setPower(BackRight * motorPower);
         }
 
-        //cod fata spate dreapta stanga
-        if (gamepad1.dpad_up)
-        {
-            motorFrontRight.setPower(motorPower);
-            motorFrontLeft.setPower(-motorPower);
-            motorBackLeft.setPower(-motorPower);
-            motorBackRight.setPower(motorPower);
-        }
-        if (gamepad1.dpad_down)
-        {
-            motorFrontRight.setPower(-motorPower);
-            motorFrontLeft.setPower(motorPower);
-            motorBackLeft.setPower(motorPower);
-            motorBackRight.setPower(-motorPower);
-        }
-        if (gamepad1.dpad_right)
-        {
-            motorFrontRight.setPower(motorPower);
-            motorFrontLeft.setPower(motorPower);
-            motorBackLeft.setPower(-motorPower);
-            motorBackRight.setPower(-motorPower);
-        }
-        if (gamepad1.dpad_left)
-        {
-            motorFrontRight.setPower(-motorPower);
-            motorFrontLeft.setPower(-motorPower);
-            motorBackLeft.setPower(motorPower);
-            motorBackRight.setPower(motorPower);
-        }
-
-
-
-
     }
 }

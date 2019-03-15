@@ -29,7 +29,7 @@ public class AutonomieCrater extends LinearOpMode {
     private DcMotor frateMotorLift;
     private Lift lift;
 
-    private Servo servo_team_mark;
+    private CRServo servo_team_marker ;
     private Servo servo_cuva;
     private DcMotor motorFrontRight;
     private DcMotor motorRidicare;
@@ -62,7 +62,7 @@ public class AutonomieCrater extends LinearOpMode {
         lift = new Lift(motorLift, frateMotorLift);
 
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
-        servo_team_mark=hardwareMap.servo.get("smart_servo");
+        servo_team_marker=hardwareMap.crservo.get("smart_servo");
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
         servo_adunare_drepta = hardwareMap.crservo.get("servo_adunare_drepta");
@@ -212,16 +212,16 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(30,180);
         sleep(1000);
 
-        robot.moveToDirectionCentimeters(140, 90);
-        sleep(2500);
+        robot.moveToDirectionCentimeters(155, 90); //distanta 140
+        sleep(3000);
 
-        servo_team_mark.setPosition(-1);
-        sleep(1000);
+        servo_team_marker.setPower(-1);
+        sleep(2000);
 
 
         robot.rotateToAngle(-5);
         sleep(500);
-        robot.moveToDirectionCentimeters(170,-90);
+        robot.moveToDirectionCentimeters(180,-90);//165
         sleep(3000);
 
 
@@ -261,14 +261,14 @@ public class AutonomieCrater extends LinearOpMode {
         //cu 40 trece la limita pe langa mineralul aliat
         sleep(1500);
 
-        robot.moveToDirectionCentimeters(135, 90);
-        sleep(2500);
+        robot.moveToDirectionCentimeters(150, 90); //135
+        sleep(3000);
 
-        servo_team_mark.setPosition(-1);
-        sleep(1000);
+        servo_team_marker.setPower(-1);
+        sleep(2000);
 
 
-        robot.moveToDirectionCentimeters(170,-90);
+        robot.moveToDirectionCentimeters(180,-90);//165
         sleep(3000);
 
 
@@ -307,14 +307,14 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(120, 135);
         sleep(3000);
 
-        robot.moveToDirectionCentimeters(80, 90);
-        sleep(1500);
+        robot.moveToDirectionCentimeters(95, 90); //80
+        sleep(2000);
 
-        servo_team_mark.setPosition(-1);
-        sleep(1000);
+        servo_team_marker.setPower(-1);
+        sleep(2000);
 
 
-        robot.moveToDirectionCentimeters(160,-90);
+        robot.moveToDirectionCentimeters(170,-90);//155
         sleep(3000);
 
         motorRidicare.setPower(0.5);

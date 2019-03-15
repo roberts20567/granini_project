@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
 
-@TeleOp(name = "TeleOP Oradea")
+@TeleOp(name = "TeleOP Functional")
 public class Teleop_Timisoara extends OpMode {
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     // </movement>
@@ -20,7 +20,6 @@ public class Teleop_Timisoara extends OpMode {
     private Lift lift;
 
     private DcMotor motorSurub;
-    private Servo servo_team_mark;
     private boolean coboara = false;
     private boolean urca = false;
     private BNO055IMU imu;
@@ -37,6 +36,7 @@ public class Teleop_Timisoara extends OpMode {
 
     private static final double lift_max_position = 9000;
     private static final double lift_min_position = 700;
+    private boolean blocare_lift = false;
 
     @Override
     public void init() {
@@ -63,8 +63,6 @@ public class Teleop_Timisoara extends OpMode {
         motorSurub= hardwareMap.dcMotor.get("motor_nebun");
         motorSurub.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorSurub.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        servo_team_mark=hardwareMap.servo.get("smart_servo");
-
         motorRidicare.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRidicare.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRidicare.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -103,6 +101,7 @@ public class Teleop_Timisoara extends OpMode {
         controlSurub();
         controlLift();
         controlCuva();
+
     }
 
     @Override
@@ -124,8 +123,7 @@ public class Teleop_Timisoara extends OpMode {
             auto = 0;
             servo_cuva.setPosition(pozitie_cuva_incarcare);
             sleep(400);
-            motorRidicare.setPower(-0.9);
-            //robot.setMotorPower(0);
+            motorRidicare.setPower(-1);
             sleep(600);
             motorRidicare.setPower(0);
         }
@@ -176,7 +174,7 @@ public class Teleop_Timisoara extends OpMode {
             motorRidicare.setPower(0);
         }
         if (gamepad1.right_bumper){
-            motorRidicare.setPower(-0.9);
+            motorRidicare.setPower(-1);
             sleep(100);
             motorRidicare.setPower(0);
         }
@@ -220,7 +218,15 @@ public class Teleop_Timisoara extends OpMode {
         }else if (gamepad2.right_stick_y !=0){
             auto2 = 0;
             auto3 = 0;
+            blocare_lift = false;
         }
+        if(gamepad1.y){
+            blocare_lift = true;
+        }
+        if(blocare_lift){
+            lift.setPower(0.22);
+        }
+
     }
 
     private void controlPeri(){

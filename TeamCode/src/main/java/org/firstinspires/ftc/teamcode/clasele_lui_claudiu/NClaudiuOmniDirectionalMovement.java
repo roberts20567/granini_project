@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.clasele_lui_claudiu;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
