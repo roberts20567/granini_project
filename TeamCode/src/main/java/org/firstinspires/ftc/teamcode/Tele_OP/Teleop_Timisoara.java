@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
 
-@TeleOp(name = "TeleOP Functional")
+@TeleOp(name = "TeleOP Bucuresti 2019")
 public class Teleop_Timisoara extends OpMode {
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     // </movement>
@@ -34,8 +34,14 @@ public class Teleop_Timisoara extends OpMode {
     private static final double pozitie_cuva_basculare = 0.35;
     private static final double pozitie_cuva_orizontal = 0.2;
 
-    private static final double lift_max_position = 9000;
-    private static final double lift_min_position = 700;
+    private static final double pozitie_extindere_maxim = 2850;
+    private static final double pozitie_extindere_minim = 25;
+
+    private static final double lift_max_position = -9000;
+    private static final double lift_save_position = -1500;
+    private static final double lift_min_position = -400;
+
+    private static final double pozitie_extindere_ferire_cuva = 150;
     private boolean blocare_lift = false;
 
     @Override
@@ -119,16 +125,21 @@ public class Teleop_Timisoara extends OpMode {
             auto = 1;
             motorSurub.setPower(-0.9);
             servo_cuva.setPosition(pozitie_cuva_orizontal);
-        }else if(auto==1 && motorSurub.getCurrentPosition()>-0){
-            auto = 0;
+        }else if(auto==1 && motorSurub.getCurrentPosition()<pozitie_extindere_minim){
+            auto = 2;
+            motorSurub.setPower(0);
+            lift.setPower(1);
             servo_cuva.setPosition(pozitie_cuva_incarcare);
+        }else if(auto==2 && lift.getCurrentPosition()>lift_min_position) {
+            auto = 0;
+            lift.setPower(0);
             sleep(400);
             motorRidicare.setPower(-1);
             sleep(600);
             motorRidicare.setPower(0);
         }
 
-        if(motorSurub.getCurrentPosition()<-150 && auto==0){
+        if(motorSurub.getCurrentPosition()>pozitie_extindere_ferire_cuva && auto==0){
             servo_cuva.setPosition(pozitie_cuva_orizontal);
         }
 
@@ -138,20 +149,26 @@ public class Teleop_Timisoara extends OpMode {
             motorRidicare.setPower(0.5);
             sleep(300);
             motorRidicare.setPower(0);
-            lift.setPower(-1);
-        } else if(auto2==1 && lift.getCurrentPosition()<-lift_max_position){
-            auto2 = 0;
-            lift.setPower(0);
+        } else if(auto2==1){
+            if(lift.getCurrentPosition()>lift_max_position) {
+                lift.setPower(-1);
+            }else {
+                auto2 = 0;
+                lift.setPower(0);
+            }
         }
 
         if(auto3==0 && gamepad2.a){
             auto3 = 1;
             auto2 = 0;
             servo_cuva.setPosition(pozitie_cuva_orizontal);
-            lift.setPower(1);
-        }else if (auto3==1 && lift.getCurrentPosition()>-lift_min_position){
-            auto3 = 0;
-            lift.setPower(0);
+        }else if(auto3==1){
+            if(lift.getCurrentPosition()<lift_save_position){
+                lift.setPower(1);
+            }else{
+                lift.setPower(0);
+                auto3 = 0;
+            }
         }
     }
 
@@ -178,17 +195,22 @@ public class Teleop_Timisoara extends OpMode {
             sleep(100);
             motorRidicare.setPower(0);
         }
+        if (gamepad1.left_bumper){
+            motorRidicare.setPower(1);
+            sleep(50);
+            motorRidicare.setPower(0);
+        }
     }
 
     private void controlSurub(){
         if(auto==0) {
             if (gamepad2.left_stick_y < 0)
-                if (motorSurub.getCurrentPosition() > -5700)
+                if (motorSurub.getCurrentPosition() < pozitie_extindere_maxim)
                     motorSurub.setPower(-gamepad2.left_stick_y);
                 else
                     motorSurub.setPower(0);
             if (gamepad2.left_stick_y >= 0)
-                if (motorSurub.getCurrentPosition() < -50)
+                if (motorSurub.getCurrentPosition() > pozitie_extindere_minim)
                     motorSurub.setPower(-gamepad2.left_stick_y);
                 else
                     motorSurub.setPower(0);
@@ -202,7 +224,7 @@ public class Teleop_Timisoara extends OpMode {
 
         double lift_power = gamepad2.right_stick_y;
 
-        if (auto2==0 && auto3==0) {
+        if (auto==0 && auto2==0 && auto3==0) {
             if (gamepad2.right_stick_y < 0) {//urcare
                 if (motorLift.getCurrentPosition() > -9300)
                     lift.setPower(gamepad2.right_stick_y);
@@ -292,16 +314,6 @@ public class Teleop_Timisoara extends OpMode {
             this.motorLift2 = motorLift2;
         }
     }
-
-    /*class UrcaFaras extends java.lang.Thread {
-        long minPrime;
-        UrcaFaras(long minPrime) {
-            this.minPrime = minPrime;
-        }
-
-        public void run() {
-
-        }*/
 
 }
 

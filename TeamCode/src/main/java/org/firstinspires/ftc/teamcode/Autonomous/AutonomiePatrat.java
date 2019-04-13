@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.media.MediaPlayer;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -24,6 +26,10 @@ public class AutonomiePatrat extends LinearOpMode {
     private DcMotor motorFrontLeft;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
+
+
+    private BNO055IMU imu;
+
 
     private DcMotor motorLift;
     private DcMotor frateMotorLift;
@@ -53,6 +59,8 @@ public class AutonomiePatrat extends LinearOpMode {
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
 
+
+
         robot.attachMotors(motorFrontRight, motorFrontLeft, motorBackRight, motorBackLeft);
         robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.AUTONOMOUS);
         robot.setMotorPower(0.5);
@@ -68,6 +76,18 @@ public class AutonomiePatrat extends LinearOpMode {
         servo_adunare_drepta = hardwareMap.crservo.get("servo_adunare_drepta");
 
         servo_cuva = hardwareMap.servo.get("servo_cuva");
+
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
     }
 
     private void initVuforia() {
@@ -141,7 +161,10 @@ public class AutonomiePatrat extends LinearOpMode {
     }
 
     private void iaCubStanga(){
-        robot.rotateToAngle(60);
+        robot.moveToDirectionCentimeters(15, -90);
+        sleep(1000);
+
+        robot.rotateToAngle(68);
         sleep(1000);
 
         motorRidicare.setPower(0.5);
@@ -164,17 +187,18 @@ public class AutonomiePatrat extends LinearOpMode {
         robot.moveToDirectionCentimeters(40, -90);
         sleep(1000);
 
-        robot.rotateToAngle(-106);
+        robot.rotateToAngle(-114);
         sleep(1700);
 
         robot.moveToDirectionCentimeters(40, 90);
         sleep(1500);
 
         servo_team_mark.setPosition(-1);
-        sleep(500);
+        sleep(2000);
 
-        robot.moveToDirectionCentimeters(170, -90);
+        robot.moveToDirectionCentimeters(160, -90);
         sleep(3000);
+
         servo_team_mark.setPosition(0);
 
         motorRidicare.setPower(0.5);
@@ -184,7 +208,7 @@ public class AutonomiePatrat extends LinearOpMode {
     }
 
     private void iaCubMijloc(){
-        robot.rotateToAngle(100);
+        robot.rotateToAngle(90);
         sleep(1000);
 
         motorRidicare.setPower(0.5);
@@ -214,7 +238,9 @@ public class AutonomiePatrat extends LinearOpMode {
         sleep(1000);
 
         servo_team_mark.setPosition(-1);
-        sleep(500);
+        sleep(2000);
+
+
 
         robot.moveToDirectionCentimeters(167.5,-90);
         sleep(3000);
@@ -248,14 +274,14 @@ public class AutonomiePatrat extends LinearOpMode {
         robot.moveToDirectionCentimeters(50, -90);
         sleep(1250);
 
-        robot.rotateToAngle(-165);
+        robot.rotateToAngle(-180);
         sleep(2000);
 
         robot.moveToDirectionCentimeters(70,0);
         sleep(2000);
 
         servo_team_mark.setPosition(-1);
-        sleep(500);
+        sleep(2000);
 
         robot.moveToDirectionCentimeters(180, -90);
         sleep(2800);

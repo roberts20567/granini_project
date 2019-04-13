@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.media.MediaPlayer;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -25,11 +27,13 @@ public class AutonomieCrater extends LinearOpMode {
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
 
+    ModernRoboticsI2cRangeSensor rangeSensor;
+
     private DcMotor motorLift;
     private DcMotor frateMotorLift;
     private Lift lift;
 
-    private CRServo servo_team_marker ;
+    private Servo servo_team_mark;
     private Servo servo_cuva;
     private DcMotor motorFrontRight;
     private DcMotor motorRidicare;
@@ -48,6 +52,7 @@ public class AutonomieCrater extends LinearOpMode {
     private static final double pozitie_cuva_normal = 0.1;
 
     private void initRobot(){
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor_range");
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
@@ -62,7 +67,7 @@ public class AutonomieCrater extends LinearOpMode {
         lift = new Lift(motorLift, frateMotorLift);
 
         motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
-        servo_team_marker=hardwareMap.crservo.get("smart_servo");
+        servo_team_mark=hardwareMap.servo.get("smart_servo");
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
         servo_adunare_drepta = hardwareMap.crservo.get("servo_adunare_drepta");
@@ -200,6 +205,9 @@ public class AutonomieCrater extends LinearOpMode {
         sleep(600);
         motorRidicare.setPower(-0.11);
 
+        robot.moveToDirectionCentimeters(10, 90);
+        sleep(750);
+
         robot.rotateToAngle(-30);
         sleep(750);
 
@@ -215,11 +223,11 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(155, 90); //distanta 140
         sleep(3000);
 
-        servo_team_marker.setPower(-1);
+        servo_team_mark.setPosition(-1);
         sleep(2000);
 
 
-        robot.rotateToAngle(-5);
+        robot.rotateToAngle(-10);
         sleep(500);
         robot.moveToDirectionCentimeters(180,-90);//165
         sleep(3000);
@@ -264,11 +272,14 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(150, 90); //135
         sleep(3000);
 
-        servo_team_marker.setPower(-1);
+        servo_team_mark.setPosition(-1);
         sleep(2000);
 
 
-        robot.moveToDirectionCentimeters(180,-90);//165
+        robot.rotateToAngle(-7);
+        sleep(500);
+
+        robot.moveToDirectionCentimeters(170,-90);//165
         sleep(3000);
 
 
@@ -310,7 +321,7 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(95, 90); //80
         sleep(2000);
 
-        servo_team_marker.setPower(-1);
+        servo_team_mark.setPosition(-1);
         sleep(2000);
 
 

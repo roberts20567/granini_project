@@ -4,19 +4,46 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class NClaudiuOmniDirectionalMovementPro {
-    private DcMotor[] dcMotorsArray;
+    private DcMotor[] dcMotorsArray = new DcMotor[100];
     private int motorNumber = 0;
-    private double[] xCoefficients;
-    private double[] yCoefficients;
+    private double[] xCoefficients = new double[100];
+    private double[] yCoefficients = new double[100];
     private Gamepad gamepad = null;
     private double motorsPower = 0.5;
     private double robotFrontSideAngle = 0;
     private boolean POW = false;
-    private double currentRobotAngle;
-    private double calibrationAngle;
+    private double currentRobotAngle = 0;
+    private double calibrationAngle = 0;
 
     public NClaudiuOmniDirectionalMovementPro(){
 
+    }
+
+    public void init(){
+        calculateCoefficients();
+    }
+
+    public enum DrivingMode {
+        AUTONOMOUS,
+        TELEOP
+    }
+
+    public void setDrivingMode(DrivingMode driving_mode){
+        switch (driving_mode){
+            case AUTONOMOUS:
+                break;
+            case TELEOP:
+                setMotorsMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                setMotorsMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                break;
+        }
+    }
+
+
+    private void setMotorsMode(DcMotor.RunMode mode){
+        for(int i=0; i<motorNumber; i++){
+            dcMotorsArray[i].setMode(mode);
+        }
     }
 
     private void calculateCoefficients(){
