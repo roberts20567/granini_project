@@ -28,14 +28,14 @@ public class USA_teleop extends OpMode {
     private Servo servo_cuva;
 
     private double max_extindere = 2777;
-    private double min_extindere = 0;
+    private double min_extindere = 200;
     private double max_lift = 700;
     private double min_lift = 0;
     private double lift_sigur = 100;
 
-    private static final double cuva_incarcare = 0.55;
-    private static final double cuva_descarcare = 0.25;
-    private static final double cuva_orizontal = 0.15;
+    private static final double cuva_incarcare = 0.70;
+    private static final double cuva_descarcare = 0.35;
+    private static final double cuva_orizontal = 0.30;
 
     @Override
     public void init() {
@@ -50,9 +50,13 @@ public class USA_teleop extends OpMode {
 
         motorExtindere = hardwareMap.dcMotor.get("motor_extindere");
         motorExtindere.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorExtindere.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         motorArticulatie = hardwareMap.dcMotor.get("motor_articulatie");
+
         motorTijaFiletata = hardwareMap.dcMotor.get("motor_tija_filetata");
         motorTijaFiletata.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorTijaFiletata.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
         servo_adunare_dreapta = hardwareMap.crservo.get("servo_adunare_dreapta");
@@ -60,6 +64,7 @@ public class USA_teleop extends OpMode {
 
         motorLift = hardwareMap.dcMotor.get("motor_lift");
         motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //motorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
@@ -94,10 +99,18 @@ public class USA_teleop extends OpMode {
     }
 
     private int automatizare_1 = 0;
+    private int automatizare_2 = 0;
+    private int automatizare_3 = 0;
+
+    private int poz_agatare = 0;
+    private int poz_temporar = 0;
+    private int poz_agatat = 0;
+
     private void automatizari(){
         double extindere = -motorExtindere.getCurrentPosition();
         double lift = -motorLift.getCurrentPosition();
 
+        // bratul de extindere se comprima si mineralele sunt basculate in cuva
         if(gamepad2.x && automatizare_1==0){
             automatizare_1 = 1;
             motorExtindere.setPower(-1);
@@ -110,11 +123,46 @@ public class USA_teleop extends OpMode {
             motorArticulatie.setPower(1);
             sleep(500);
             motorArticulatie.setPower(0);
+
+            robot.opModeLoop();
+            motorArticulatie.setPower(-0.5);
+            sleep(200);
+            motorArticulatie.setPower(0);
+            automatizare_2 = 1;
+            motorLift.setPower(1);
         }
 
-        if(automatizare_1==0 && extindere>150 && lift<lift_sigur){
+        if(gamepad2.right_stick_y!=0){
+            automatizare_1 = 0;
+        }
+
+        // se fereste cuva de motorArticulatie
+        if(automatizare_1==0 && automatizare_2==0 && extindere>150 && lift<lift_sigur){
             motorLift.setPower(1);
             sleep(75);
+            motorLift.setPower(0.2);
+        }
+
+        // urca liftul in pozitia de basculare in lander
+        if(gamepad2.y && automatizare_2==0){
+            automatizare_2 = 1;
+            motorLift.setPower(1);
+        }else if(automatizare_2==1 && lift>=max_lift-100){
+            automatizare_2 = 2;
+            motorLift.setPower(0.75);
+        }else if(automatizare_2==2 && lift>=max_lift){
+            automatizare_2 = 0;
+            motorLift.setPower(0.2);
+        }
+
+        // coboara liftul
+        if(gamepad2.a && automatizare_3==0) {
+            automatizare_3 = 1;
+            motorLift.setPower(-0.1);
+        }else if (automatizare_3==1 && lift<lift_sigur+100){
+            automatizare_3 = 0;
+            motorLift.setPower(0.5);
+            sleep(100);
             motorLift.setPower(0.2);
         }
 
@@ -123,16 +171,33 @@ public class USA_teleop extends OpMode {
     private void controlLift(){
         double lift_position = -motorLift.getCurrentPosition();
         double right_stick_y = -gamepad2.right_stick_y;
+        if(automatizare_1==0 && automatizare_2==0) {
+            if (right_stick_y > 0.2) {//urcare
+                if (lift_position < max_lift)
+                    motorLift.setPower(right_stick_y);
+                else
+                    motorLift.setPower(0.2);
+            }
+            if (right_stick_y < -0.1) {//coborare
+                motorLift.setPower(0.02);
+            }
+        }
+    }
 
-       if (right_stick_y > 0.2) {//urcare
-            if (lift_position < max_lift)
-                motorLift.setPower(right_stick_y);
-            else
-                motorLift.setPower(0.2);
-       }
-       if (right_stick_y <= -0.1) {//coborare
-            motorLift.setPower(0.02);
-       }
+    private void controlTijaFiletanta(){
+        if (gamepad2.dpad_left){
+            motorTijaFiletata.setTargetPosition(poz_agatare);
+            motorTijaFiletata.setPower(1); // tija in pozitia de pozitionare
+        }
+        if (gamepad2.dpad_right){
+            motorTijaFiletata.setTargetPosition(poz_temporar);
+            motorTijaFiletata.setPower(1); // tija in pozitie de cremaliera intrata
+
+            motorTijaFiletata.setTargetPosition(poz_agatat);
+            motorTijaFiletata.setPower(1); // tija in pozitie de agatat
+        }
+
+
     }
 
 

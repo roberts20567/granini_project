@@ -26,21 +26,19 @@ public class AutonomieCrater extends LinearOpMode {
     private DcMotor motorFrontLeft;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
+    private DcMotor motorFrontRight;
 
     ModernRoboticsI2cRangeSensor rangeSensor;
 
+    private DcMotor motorArticulatie;
     private DcMotor motorLift;
-    private DcMotor frateMotorLift;
-    private Lift lift;
-
-    private Servo servo_team_mark;
-    private Servo servo_cuva;
-    private DcMotor motorFrontRight;
-    private DcMotor motorRidicare;
-    private MediaPlayer mPlayer;
+    private DcMotor motorTijaFiletata;
+    private DcMotor motorExtindere;
 
     private CRServo servo_adunare_stanga;
-    private CRServo servo_adunare_drepta;
+    private CRServo servo_adunare_dreapta;
+    private Servo servo_cuva;
+
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -52,7 +50,6 @@ public class AutonomieCrater extends LinearOpMode {
     private static final double pozitie_cuva_normal = 0.1;
 
     private void initRobot(){
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor_range");
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
@@ -62,17 +59,23 @@ public class AutonomieCrater extends LinearOpMode {
         robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.AUTONOMOUS);
         robot.setMotorPower(0.5);
 
-        motorLift = hardwareMap.dcMotor.get("motor_lift");
-        frateMotorLift = hardwareMap.dcMotor.get("frate_motor_lift");
-        lift = new Lift(motorLift, frateMotorLift);
+        motorExtindere = hardwareMap.dcMotor.get("motor_extindere");
+        motorExtindere.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorExtindere.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
-        servo_team_mark=hardwareMap.servo.get("smart_servo");
+        motorArticulatie = hardwareMap.dcMotor.get("motor_articulatie");
+
+        motorTijaFiletata = hardwareMap.dcMotor.get("motor_tija_filetata");
+        motorTijaFiletata.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorTijaFiletata.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
-        servo_adunare_drepta = hardwareMap.crservo.get("servo_adunare_drepta");
-
+        servo_adunare_dreapta = hardwareMap.crservo.get("servo_adunare_dreapta");
         servo_cuva = hardwareMap.servo.get("servo_cuva");
+
+        motorLift = hardwareMap.dcMotor.get("motor_lift");
+        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     private void initVuforia() {
@@ -88,10 +91,6 @@ public class AutonomieCrater extends LinearOpMode {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-    }
-
-    private void initSound() {
-        mPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.mariothemesong1);
     }
 
     private int detectieGold() {
@@ -125,7 +124,7 @@ public class AutonomieCrater extends LinearOpMode {
     }
 
     private void coborareRobot(){
-        lift.setPower(0.66);
+       /* mot.setPower(0.66);
         sleep(1700);
         lift.setPower(0);
         sleep(500);
@@ -137,11 +136,11 @@ public class AutonomieCrater extends LinearOpMode {
         sleep(1700);
         lift.setPower(0);
         servo_cuva.setPosition(pozitie_cuva_normal);
-        sleep(500);
+        sleep(500);*/
     }
 
     private void notCoborareRobot(){
-        robot.moveToDirectionCentimeters(10, 0);
+        robot.moveToDirectionCentimeters(-10, 0);
         sleep(1000);
     }
 
@@ -150,23 +149,20 @@ public class AutonomieCrater extends LinearOpMode {
         initRobot();
         initVuforia();
         initTfod();
-        initSound();
         if(tfod != null){
             tfod.activate();
             sleep(500);
         }
-
-        lift.setPower(-0.1);
+        
         waitForStart();
-
-        mPlayer.start();
+        
 
         int gold_position = detectieGold();
         telemetry.addData("Gold position", gold_position);
         telemetry.update();
-
-        coborareRobot();
-        //notCoborareRobot();
+        
+        //coborareRobot();
+        notCoborareRobot();
 
         switch (gold_position){
             case 0:
@@ -185,25 +181,25 @@ public class AutonomieCrater extends LinearOpMode {
     }
 
     private void iaCubDreapta(){
-        robot.rotateToAngle(130);
+        robot.rotateToAngle(-60);
         sleep(1250);
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
 
-        servo_adunare_drepta.setPower(1);
+        servo_adunare_dreapta.setPower(1);
         servo_adunare_stanga.setPower(-1);
         sleep(500);
 
         robot.moveToDirectionCentimeters(40, -90);
         sleep(2500);
 
-        servo_adunare_drepta.setPower(0);
+        servo_adunare_dreapta.setPower(0);
         servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
+        motorArticulatie.setPower(1);
         sleep(600);
-        motorRidicare.setPower(-0.11);
+        motorArticulatie.setPower(0.11);
 
         robot.moveToDirectionCentimeters(10, 90);
         sleep(750);
@@ -214,7 +210,7 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(100, 180);
         sleep(2000);
 
-        robot.rotateToAngle(50);
+        robot.rotateToAngle(40);
         sleep(1250);
 
         robot.moveToDirectionCentimeters(30,180);
@@ -223,7 +219,7 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(155, 90); //distanta 140
         sleep(3000);
 
-        servo_team_mark.setPosition(-1);
+        //servo_team_mark.setPosition(-1);
         sleep(2000);
 
 
@@ -233,31 +229,31 @@ public class AutonomieCrater extends LinearOpMode {
         sleep(3000);
 
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
     }
 
     private void iaCubMijloc(){
-        robot.rotateToAngle(95);
+        robot.rotateToAngle(-95);
         sleep(1000);
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
 
-        servo_adunare_drepta.setPower(1);
+        servo_adunare_dreapta.setPower(1);
         servo_adunare_stanga.setPower(-1);
         sleep(500);
 
         robot.moveToDirectionCentimeters(35, -90);
         sleep(2500);
 
-        servo_adunare_drepta.setPower(0);
+        servo_adunare_dreapta.setPower(0);
         servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
+        motorArticulatie.setPower(1);
         sleep(600);
-        motorRidicare.setPower(-0.11);
+        motorArticulatie.setPower(0.11);
 
         robot.moveToDirectionCentimeters(75, 180);
         sleep(1500);
@@ -272,7 +268,7 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(150, 90); //135
         sleep(3000);
 
-        servo_team_mark.setPosition(-1);
+        //servo_team_mark.setPosition(-1);
         sleep(2000);
 
 
@@ -283,36 +279,36 @@ public class AutonomieCrater extends LinearOpMode {
         sleep(3000);
 
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
     }
 
     private void iaCubStanga() {
-        robot.rotateToAngle(60);
+        robot.rotateToAngle(-130);
         sleep(1000);
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
 
-        servo_adunare_drepta.setPower(1);
+        servo_adunare_dreapta.setPower(1);
         servo_adunare_stanga.setPower(-1);
         sleep(500);
 
         robot.moveToDirectionCentimeters(50, -90);
         sleep(2500);
 
-        servo_adunare_drepta.setPower(0);
+        servo_adunare_dreapta.setPower(0);
         servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
+        motorArticulatie.setPower(1);
         sleep(600);
-        motorRidicare.setPower(-0.11);
+        motorArticulatie.setPower(0.11);
 
         robot.moveToDirectionCentimeters(10, 90);
         sleep(750);
 
-        robot.rotateToAngle(90);
+        robot.rotateToAngle(85);
         sleep(2000);
 
         robot.moveToDirectionCentimeters(120, 135);
@@ -321,15 +317,15 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(95, 90); //80
         sleep(2000);
 
-        servo_team_mark.setPosition(-1);
+        //servo_team_mark.setPosition(-1);
         sleep(2000);
 
 
         robot.moveToDirectionCentimeters(170,-90);//155
         sleep(3000);
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
     }
 }
