@@ -162,7 +162,7 @@ public class AutonomiePatrat extends LinearOpMode {
         motorExtindere.setPower(0.75);
         sleep(1500 + distanta_extindere_bonus);
         motorExtindere.setPower(0);
-        sleep(250);
+        sleep(1000);
         servo_adunare_dreapta.setPower(0);
         servo_adunare_stanga.setPower(0);
 
@@ -204,7 +204,7 @@ public class AutonomiePatrat extends LinearOpMode {
                 motorLift.setPower(1);
             }else if(automatizare_2==3 && lift>=max_lift){
                 automatizare_2 = 0;
-                motorLift.setPower(0.2);
+                motorLift.setPower(0.3);
             }
 
             telemetry.addData("Power lift:", motorLift.getPower());
@@ -214,16 +214,18 @@ public class AutonomiePatrat extends LinearOpMode {
         robot.rotateToAngle(rotire_bouns);
         sleep(50*Math.abs(rotire_bouns));
 
-        robot.moveToDirectionCentimeters(20, 90);
+        robot.moveToDirectionCentimeters(10, 90);
         sleep(500);
 
         servo_cuva.setPosition(cuva_descarcare);
+        sleep(1500);
+
+        servo_cuva.setPosition(cuva_incarcare);
         sleep(1000);
 
         robot.moveToDirectionCentimeters(10, -90);
-        sleep(750);
+        sleep(1000);
 
-        servo_cuva.setPosition(cuva_incarcare);
         motorLift.setPower(0);
 
         robot.rotateToAngle(-rotire_bouns);
@@ -240,6 +242,8 @@ public class AutonomiePatrat extends LinearOpMode {
 
     private void aruncaTeamMarker(){
         servo_team_marker.setPosition(-1);
+        sleep(1000);
+        servo_team_marker.setPosition(0);
     }
 
     private int automatizare_1 = 0;
@@ -254,7 +258,7 @@ public class AutonomiePatrat extends LinearOpMode {
 
         mineralScoruit(1000);
 
-        robot.moveToDirectionCentimeters(70, -90);
+        robot.moveToDirectionCentimeters(60, -90);//70
         sleep(500);
 
         ridicaFarasSiTine_l();
@@ -269,10 +273,9 @@ public class AutonomiePatrat extends LinearOpMode {
         sleep(1500);
 
         aruncaTeamMarker();
-        sleep(1000);
 
-        robot.moveToDirectionCentimeters(160, -90);
-        sleep(2000);
+        robot.moveToDirectionCentimeters(170, -90);
+        sleep(2500);
 
         motorArticulatie.setPower(-0.5);
         sleep(500);
@@ -286,7 +289,7 @@ public class AutonomiePatrat extends LinearOpMode {
 
         mineralScoruit();
 
-        robot.moveToDirectionCentimeters(70, -90);
+        robot.moveToDirectionCentimeters(60, -90);//70
         sleep(1800);
 
         ridicaFarasSiTine_l();
@@ -301,8 +304,6 @@ public class AutonomiePatrat extends LinearOpMode {
         sleep(800);
 
         aruncaTeamMarker();
-        sleep(2000);
-
 
         robot.moveToDirectionCentimeters(167.5, -90);
         sleep(3000);
@@ -318,25 +319,24 @@ public class AutonomiePatrat extends LinearOpMode {
 
         mineralScoruit(1000, -20);
 
-        robot.moveToDirectionCentimeters(70, -90);
+        robot.moveToDirectionCentimeters(60, -90);//70
         sleep(500);
 
         ridicaFarasSiTine_l();
 
         robot.moveToDirectionCentimeters(50, -90);
-        sleep(2000);
+        sleep(1750);
 
         robot.rotateToAngle(-180);
-        sleep(2000);
+        sleep(1750);
 
         robot.moveToDirectionCentimeters(90, 0);
-        sleep(2000);
+        sleep(1750);
 
         aruncaTeamMarker();
-        sleep(1000);
 
-        robot.moveToDirectionCentimeters(180, -90);
-        sleep(2000);
+        robot.moveToDirectionCentimeters(190, -90);
+        sleep(2500);
 
         motorArticulatie.setPower(-0.5);
         sleep(500);
