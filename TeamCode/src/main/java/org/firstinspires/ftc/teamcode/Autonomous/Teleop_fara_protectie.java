@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tele_OP;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,13 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.clasele_lui_claudiu.NClaudiuOmniDirectionalMovement;
 
-///cuva 512
-/// ridicare pt extindere : 64
-///extindere 2777
-/////
-
-@TeleOp(name = "USA Teleop")
-public class USA_teleop extends OpMode {
+@TeleOp(name = "Teleop fara protectie")
+public class Teleop_fara_protectie extends OpMode {
     private NClaudiuOmniDirectionalMovement robot = new NClaudiuOmniDirectionalMovement();
     private double viteza_motoare = 0.66;
 
@@ -34,7 +29,7 @@ public class USA_teleop extends OpMode {
     private double lift_sigur = 100;
 
     private static final double cuva_incarcare = 0.70;
-    private static final double cuva_descarcare = 0.40;
+    private static final double cuva_descarcare = 0.35;
     private static final double cuva_orizontal = 0.30;
 
     @Override
@@ -56,7 +51,7 @@ public class USA_teleop extends OpMode {
 
         motorTijaFiletata = hardwareMap.dcMotor.get("motor_tija_filetata");
         motorTijaFiletata.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorTijaFiletata.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorTijaFiletata.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
         servo_adunare_dreapta = hardwareMap.crservo.get("servo_adunare_dreapta");
@@ -74,12 +69,11 @@ public class USA_teleop extends OpMode {
         robot.opModeLoop();
         controlVitezaMiscare();
         controlArticulatie();
-        //controlTijaFiletantaLaMisto();
-        controlTijaFiletanta();
+        controlTijaFiletantaLaMisto();
         controlPeri();
         showTelemetry();
         controlLift();
-        controlExtindere();
+        controlExtindereLaMisto();
         controlCuva();
         automatizari();
 
@@ -105,10 +99,9 @@ public class USA_teleop extends OpMode {
     private int automatizare_2 = 0;
     private int automatizare_3 = 0;
 
-    private int poz_max_tija = 3940;
-    private int poz_agatare = poz_max_tija - 2450;
-    private int poz_temporar = poz_max_tija - 3400;
-    private int poz_agatat = poz_max_tija - 1200;
+    private int poz_agatare = -2450;
+    private int poz_temporar = -3400;
+    private int poz_agatat = -1200;
 
     private void automatizari(){
         double extindere = -motorExtindere.getCurrentPosition();
@@ -153,7 +146,7 @@ public class USA_teleop extends OpMode {
             motorLift.setPower(1);
         }else if(automatizare_2==1 && lift>=max_lift-100){
             automatizare_2 = 2;
-            motorLift.setPower(0.85);
+            motorLift.setPower(0.75);
         }else if(automatizare_2==2 && lift>=max_lift){
             automatizare_2 = 0;
             motorLift.setPower(0.2);
@@ -252,6 +245,10 @@ public class USA_teleop extends OpMode {
                 else
                     motorExtindere.setPower(0);
         }
+    }
+
+    private void controlExtindereLaMisto(){
+        motorExtindere.setPower(-gamepad2.left_stick_y);
     }
 
     private void controlPeri(){

@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -26,23 +27,29 @@ public class AutonomiePatrat extends LinearOpMode {
     private DcMotor motorFrontLeft;
     private DcMotor motorBackLeft;
     private DcMotor motorBackRight;
-
-
-    private BNO055IMU imu;
-
-
-    private DcMotor motorLift;
-    private DcMotor frateMotorLift;
-    private Lift lift;
-
-    private Servo servo_team_mark;
-    private Servo servo_cuva;
     private DcMotor motorFrontRight;
-    private DcMotor motorRidicare;
-    private MediaPlayer mPlayer;
+
+    ModernRoboticsI2cRangeSensor rangeSensor;
+
+    private DcMotor motorArticulatie;
+    private DcMotor motorLift;
+    private DcMotor motorTijaFiletata;
+    private DcMotor motorExtindere;
 
     private CRServo servo_adunare_stanga;
-    private CRServo servo_adunare_drepta;
+    private CRServo servo_adunare_dreapta;
+    private Servo servo_cuva;
+    private Servo servo_team_marker;
+
+    private double max_extindere = 2777;
+    private double min_extindere = 200;
+    private double max_lift = 650;
+    private double min_lift = 0;
+    private double lift_sigur = 100;
+
+    private static final double cuva_incarcare = 0.70;
+    private static final double cuva_descarcare = 0.40;
+    private static final double cuva_orizontal = 0.30;
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -53,41 +60,35 @@ public class AutonomiePatrat extends LinearOpMode {
 
     private static final double pozitie_cuva_normal = 0.1;
 
-    private void initRobot(){
+    private void initRobot() {
         motorFrontRight = hardwareMap.dcMotor.get("motor_test_1");
         motorFrontLeft = hardwareMap.dcMotor.get("motor_test_2");
         motorBackLeft = hardwareMap.dcMotor.get("motor_test_3");
         motorBackRight = hardwareMap.dcMotor.get("motor_test_4");
 
-
-
         robot.attachMotors(motorFrontRight, motorFrontLeft, motorBackRight, motorBackLeft);
         robot.setDrivingMode(NClaudiuOmniDirectionalMovement.DrivingMode.AUTONOMOUS);
-        robot.setMotorPower(0.5);
+        robot.setMotorPower(1);
 
-        motorLift = hardwareMap.dcMotor.get("motor_lift");
-        frateMotorLift = hardwareMap.dcMotor.get("frate_motor_lift");
-        lift = new Lift(motorLift, frateMotorLift);
+        motorExtindere = hardwareMap.dcMotor.get("motor_extindere");
+        motorExtindere.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorExtindere.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorRidicare = hardwareMap.dcMotor.get("motor_ridicare");
-        servo_team_mark=hardwareMap.servo.get("smart_servo");
+        motorArticulatie = hardwareMap.dcMotor.get("motor_articulatie");
+
+        motorTijaFiletata = hardwareMap.dcMotor.get("motor_tija_filetata");
+        motorTijaFiletata.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorTijaFiletata.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         servo_adunare_stanga = hardwareMap.crservo.get("servo_adunare_stanga");
-        servo_adunare_drepta = hardwareMap.crservo.get("servo_adunare_drepta");
-
+        servo_adunare_dreapta = hardwareMap.crservo.get("servo_adunare_dreapta");
         servo_cuva = hardwareMap.servo.get("servo_cuva");
 
+        motorLift = hardwareMap.dcMotor.get("motor_lift");
+        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-
+        servo_team_marker = hardwareMap.servo.get("servo_team_marker");
     }
 
     private void initVuforia() {
@@ -103,10 +104,6 @@ public class AutonomiePatrat extends LinearOpMode {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-    }
-
-    private void initSound() {
-        mPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.mariothemesong1);
     }
 
     private int detectieGold() {
@@ -127,9 +124,9 @@ public class AutonomiePatrat extends LinearOpMode {
                     }
                     if (goldMineralX == -1) {
                         gold_mineral_position = 1;
-                    }else if(goldMineralX < silverMineral1X) {
+                    } else if (goldMineralX < silverMineral1X) {
                         gold_mineral_position = 2;
-                    }else {
+                    } else {
                         gold_mineral_position = 3;
                     }
                 }
@@ -139,172 +136,225 @@ public class AutonomiePatrat extends LinearOpMode {
         return gold_mineral_position;
     }
 
-    private void doboaraNimic(){
-        robot.moveToDirection(2850, 0);
-        sleep(3000);
-        robot.rotateToAngle(-165);
-        sleep(3000);
-        robot.moveToDirection(1000, 90);
-        sleep(3000);
-
-        servo_team_mark.setPosition(-1);
-        sleep(2000);
-
-        robot.rotateToAngle(110);
-        sleep(2500);
-        robot.moveToDirection(4000, -90);
-        sleep(5000);
-        motorRidicare.setPower(0.5);
-        sleep(2000);
-        motorRidicare.setPower(0);
-        sleep(11);
+    private void mineralScoruit(){
+        mineralScoruit(0);
     }
 
-    private void iaCubStanga(){
-        robot.moveToDirectionCentimeters(15, -90);
-        sleep(1000);
+    private void mineralScoruit(int distanta_rotire_bonus){
+        mineralScoruit(distanta_rotire_bonus, 0);
+    }
 
-        robot.rotateToAngle(68);
-        sleep(1000);
+    private void mineralScoruit (int distanta_extindere_bonus, int rotire_bouns){
 
-        motorRidicare.setPower(0.5);
-        sleep(500);
-
-        motorRidicare.setPower(0);
-        servo_adunare_drepta.setPower(1);
+        servo_adunare_dreapta.setPower(1);
         servo_adunare_stanga.setPower(-1);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
+        motorArticulatie.setPower(0);
+
+        // se fereste cuva de motorArticulatie
+        motorLift.setPower(1);
+        sleep(75);
+        motorLift.setPower(0.2);
+
+        // ia cub in cuva
+
+        motorExtindere.setPower(0.75);
+        sleep(1500 + distanta_extindere_bonus);
+        motorExtindere.setPower(0);
+        sleep(250);
+        servo_adunare_dreapta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+
+        automatizare_1 = 1;
+        motorExtindere.setPower(-1);
+
+        while ((automatizare_1!=0 || automatizare_2!=0) && opModeIsActive()){
+            double extindere = -motorExtindere.getCurrentPosition();
+            double lift = -motorLift.getCurrentPosition();
+
+            // bratul de extindere se comprima si mineralele sunt basculate in cuva
+            if(automatizare_1==1 && extindere<=min_extindere){
+                automatizare_1 = 2;
+                motorLift.setPower(0);
+                servo_cuva.setPosition(cuva_incarcare);
+                telemetry.addData("Power lift:", motorLift.getPower());
+                telemetry.update();
+            }else if(automatizare_1==2 && lift<=min_lift){
+                automatizare_1 = 0;
+                motorArticulatie.setPower(1);
+                sleep(500);
+                motorArticulatie.setPower(0);
+
+                motorArticulatie.setPower(-0.5);
+                sleep(300);
+                motorArticulatie.setPower(0);
+                automatizare_2 = 1;
+                motorLift.setPower(1);
+                telemetry.addLine("Sunt in else..");
+                telemetry.update();
+            }
+
+            // urca liftul in pozitia de basculare in lander
+            if(automatizare_2==1){
+                automatizare_2 = 2;
+                motorLift.setPower(1);
+            }else if(automatizare_2==2 && lift>=max_lift-100){
+                automatizare_2 = 3;
+                motorLift.setPower(1);
+            }else if(automatizare_2==3 && lift>=max_lift){
+                automatizare_2 = 0;
+                motorLift.setPower(0.2);
+            }
+
+            telemetry.addData("Power lift:", motorLift.getPower());
+            telemetry.update();
+        }
+
+        robot.rotateToAngle(rotire_bouns);
+        sleep(50*Math.abs(rotire_bouns));
+
+        robot.moveToDirectionCentimeters(20, 90);
+        sleep(500);
+
+        servo_cuva.setPosition(cuva_descarcare);
+        sleep(1000);
+
+        robot.moveToDirectionCentimeters(10, -90);
+        sleep(750);
+
+        servo_cuva.setPosition(cuva_incarcare);
+        motorLift.setPower(0);
+
+        robot.rotateToAngle(-rotire_bouns);
+        sleep(50* Math.abs(rotire_bouns));
+    }
+
+    private void ridicaFarasSiTine_l(){
+        servo_adunare_dreapta.setPower(0);
+        servo_adunare_stanga.setPower(0);
+        motorArticulatie.setPower(1);
+        sleep(600);
+        motorArticulatie.setPower(0.11);
+    }
+
+    private void aruncaTeamMarker(){
+        servo_team_marker.setPosition(-1);
+    }
+
+    private int automatizare_1 = 0;
+    private int automatizare_2 = 0;
+
+    private void iaCubStanga() {
+        robot.moveToDirectionCentimeters(15, 90);
+        sleep(1000);
+
+        robot.rotateToAngle(-125);
+        sleep(1000);
+
+        mineralScoruit(1000);
 
         robot.moveToDirectionCentimeters(70, -90);
-        sleep(2500);
+        sleep(500);
 
-        servo_adunare_drepta.setPower(0);
-        servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
-        sleep(600);
-        motorRidicare.setPower(-0.11);
+        ridicaFarasSiTine_l();
 
-        robot.moveToDirectionCentimeters(40, -90);
-        sleep(1000);
-
-        robot.rotateToAngle(-114);
-        sleep(1700);
-
-        robot.moveToDirectionCentimeters(40, 90);
+        robot.moveToDirectionCentimeters(60, -90);
         sleep(1500);
 
-        servo_team_mark.setPosition(-1);
-        sleep(2000);
+        robot.rotateToAngle(-120);
+        sleep(1500);
+
+        robot.moveToDirectionCentimeters(60, 90);
+        sleep(1500);
+
+        aruncaTeamMarker();
+        sleep(1000);
 
         robot.moveToDirectionCentimeters(160, -90);
-        sleep(3000);
+        sleep(2000);
 
-        servo_team_mark.setPosition(0);
-
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
 
     }
 
-    private void iaCubMijloc(){
-        robot.rotateToAngle(90);
+    private void iaCubMijloc() {
+        robot.rotateToAngle(-98);
         sleep(1000);
 
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-
-        servo_adunare_drepta.setPower(1);
-        servo_adunare_stanga.setPower(-1);
-        sleep(500);
+        mineralScoruit();
 
         robot.moveToDirectionCentimeters(70, -90);
         sleep(1800);
 
-        servo_adunare_drepta.setPower(0);
-        servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
-        sleep(600);
-        motorRidicare.setPower(-0.11);
+        ridicaFarasSiTine_l();
 
         robot.moveToDirectionCentimeters(40, -90);
-        sleep(1000);
+        sleep(800);
 
         robot.rotateToAngle(-140);
-        sleep(1800);
+        sleep(1400);
 
-        robot.moveToDirectionCentimeters(35, 0);
-        sleep(1000);
+        robot.moveToDirectionCentimeters(50, 0);
+        sleep(800);
 
-        servo_team_mark.setPosition(-1);
+        aruncaTeamMarker();
         sleep(2000);
 
 
-
-        robot.moveToDirectionCentimeters(167.5,-90);
+        robot.moveToDirectionCentimeters(167.5, -90);
         sleep(3000);
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
     }
 
-    private void iaCubDreapta(){
-        robot.rotateToAngle(125);
+    private void iaCubDreapta() {
+        robot.rotateToAngle(-68);
         sleep(1000);
 
-        motorRidicare.setPower(0.5);
-        sleep(500);
-        motorRidicare.setPower(0);
-
-        servo_adunare_drepta.setPower(1);
-        servo_adunare_stanga.setPower(-1);
-        sleep(500);
+        mineralScoruit(1000, -20);
 
         robot.moveToDirectionCentimeters(70, -90);
-        sleep(2000);
+        sleep(500);
 
-        servo_adunare_drepta.setPower(0);
-        servo_adunare_stanga.setPower(0);
-        motorRidicare.setPower(-1);
-        sleep(600);
-        motorRidicare.setPower(-0.11);
+        ridicaFarasSiTine_l();
 
         robot.moveToDirectionCentimeters(50, -90);
-        sleep(1250);
+        sleep(2000);
 
         robot.rotateToAngle(-180);
         sleep(2000);
 
-        robot.moveToDirectionCentimeters(70,0);
+        robot.moveToDirectionCentimeters(90, 0);
         sleep(2000);
 
-        servo_team_mark.setPosition(-1);
-        sleep(2000);
+        aruncaTeamMarker();
+        sleep(1000);
 
         robot.moveToDirectionCentimeters(180, -90);
-        sleep(2800);
+        sleep(2000);
 
-        motorRidicare.setPower(0.5);
+        motorArticulatie.setPower(-0.5);
         sleep(500);
-        motorRidicare.setPower(0);
+        motorArticulatie.setPower(0);
     }
 
     private void coborareRobot(){
-        lift.setPower(0.66);
+        motorTijaFiletata.setTargetPosition(-3940);
+        motorTijaFiletata.setPower(1);
         sleep(1700);
-        lift.setPower(0);
-        sleep(500);
 
-        robot.moveToDirectionCentimeters(10, 0);
+        robot.moveToDirectionCentimeters(10, 180);
         sleep(1000);
+    }
 
-        lift.setPower(-0.66);
-        sleep(1700);
-        lift.setPower(0);
-        servo_cuva.setPosition(pozitie_cuva_normal);
-        sleep(500);
+    private void notCoborareRobot() {
+        robot.moveToDirectionCentimeters(-10, 0);
+        sleep(1000);
     }
 
     @Override
@@ -312,24 +362,21 @@ public class AutonomiePatrat extends LinearOpMode {
         initRobot();
         initVuforia();
         initTfod();
-        initSound();
-        if(tfod != null){
+        if (tfod != null) {
             tfod.activate();
             sleep(500);
         }
 
-        lift.setPower(-0.1);
         waitForStart();
-
-        mPlayer.start();
 
         int gold_position = detectieGold();
         telemetry.addData("Gold position", gold_position);
         telemetry.update();
 
         coborareRobot();
+        //notCoborareRobot();
 
-        switch (gold_position){
+        switch (gold_position) {
             case 0:
                 iaCubMijloc();
                 break;
@@ -345,41 +392,4 @@ public class AutonomiePatrat extends LinearOpMode {
         }
 
     }
-
-    class Lift{
-        private DcMotor motorLift1;
-        private DcMotor motorLift2;
-
-        Lift(DcMotor motor_1, DcMotor motor_2){
-            motorLift1 = motor_1;
-            motorLift2 = motor_2;
-        }
-
-        void setPower(double power){
-            motorLift1.setPower(power);
-            motorLift2.setPower(-power);
-        }
-
-        void setTargetPOsition(int target){
-            motorLift1.setTargetPosition(target);
-            motorLift2.setTargetPosition(-target);
-        }
-
-        public DcMotor getMotorLift1() {
-            return motorLift1;
-        }
-
-        public void setMotorLift1(DcMotor motorLift1) {
-            this.motorLift1 = motorLift1;
-        }
-
-        public DcMotor getMotorLift2() {
-            return motorLift2;
-        }
-
-        public void setMotorLift2(DcMotor motorLift2) {
-            this.motorLift2 = motorLift2;
-        }
-    }
 }
-

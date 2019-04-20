@@ -38,6 +38,7 @@ public class AutonomieCrater extends LinearOpMode {
     private CRServo servo_adunare_stanga;
     private CRServo servo_adunare_dreapta;
     private Servo servo_cuva;
+    private Servo servo_team_marker;
 
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -76,6 +77,8 @@ public class AutonomieCrater extends LinearOpMode {
         motorLift = hardwareMap.dcMotor.get("motor_lift");
         motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        servo_team_marker = hardwareMap.servo.get("servo_team_marker");
     }
 
     private void initVuforia() {
@@ -124,24 +127,21 @@ public class AutonomieCrater extends LinearOpMode {
     }
 
     private void coborareRobot(){
-       /* mot.setPower(0.66);
+        motorTijaFiletata.setTargetPosition(-3940);
+        motorTijaFiletata.setPower(1);
         sleep(1700);
-        lift.setPower(0);
-        sleep(500);
 
-        robot.moveToDirectionCentimeters(10, 0);
+        robot.moveToDirectionCentimeters(10, 180);
         sleep(1000);
-
-        lift.setPower(-0.66);
-        sleep(1700);
-        lift.setPower(0);
-        servo_cuva.setPosition(pozitie_cuva_normal);
-        sleep(500);*/
     }
 
     private void notCoborareRobot(){
         robot.moveToDirectionCentimeters(-10, 0);
         sleep(1000);
+    }
+
+    private void aruncaTeamMarker(){
+        servo_team_marker.setPosition(-1);
     }
 
     @Override
@@ -161,8 +161,8 @@ public class AutonomieCrater extends LinearOpMode {
         telemetry.addData("Gold position", gold_position);
         telemetry.update();
         
-        //coborareRobot();
-        notCoborareRobot();
+        coborareRobot();
+        //notCoborareRobot();
 
         switch (gold_position){
             case 0:
@@ -181,7 +181,7 @@ public class AutonomieCrater extends LinearOpMode {
     }
 
     private void iaCubDreapta(){
-        robot.rotateToAngle(-60);
+        robot.rotateToAngle(-70);
         sleep(1250);
 
         motorArticulatie.setPower(-0.5);
@@ -219,8 +219,8 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(155, 90); //distanta 140
         sleep(3000);
 
-        //servo_team_mark.setPosition(-1);
-        sleep(2000);
+        aruncaTeamMarker();
+        sleep(1500);
 
 
         robot.rotateToAngle(-10);
@@ -235,7 +235,7 @@ public class AutonomieCrater extends LinearOpMode {
     }
 
     private void iaCubMijloc(){
-        robot.rotateToAngle(-95);
+        robot.rotateToAngle(-100);
         sleep(1000);
 
         motorArticulatie.setPower(-0.5);
@@ -268,8 +268,8 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(150, 90); //135
         sleep(3000);
 
-        //servo_team_mark.setPosition(-1);
-        sleep(2000);
+        aruncaTeamMarker();
+        sleep(1500);
 
 
         robot.rotateToAngle(-7);
@@ -317,8 +317,8 @@ public class AutonomieCrater extends LinearOpMode {
         robot.moveToDirectionCentimeters(95, 90); //80
         sleep(2000);
 
-        //servo_team_mark.setPosition(-1);
-        sleep(2000);
+        aruncaTeamMarker();
+        sleep(1500);
 
 
         robot.moveToDirectionCentimeters(170,-90);//155
